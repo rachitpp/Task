@@ -50,6 +50,11 @@ const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: true, error: null });
       const response = await authApi.login({ email, password });
       set({ user: response.data, loading: false });
+
+      // Save token to localStorage if provided in response
+      if (response.token) {
+        localStorage.setItem("authToken", response.token);
+      }
     } catch (error: unknown) {
       const apiError = error as ApiError;
       set({
@@ -79,6 +84,11 @@ const useAuthStore = create<AuthState>((set, get) => ({
     try {
       // First set loading and clear user state
       set({ loading: true, error: null, user: null });
+
+      // Also clear token from localStorage
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("authToken");
+      }
 
       // Then make the API call
       await authApi.logout();
@@ -115,19 +125,36 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
     try {
       set({ loading: true, error: null });
-      const response = await authApi.getProfile();
 
-      // Only update the state if we have valid user data
-      if (response.success && response.data) {
-        set({ user: response.data, loading: false, initialized: true });
+      // Check if there's a token in localStorage
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("authToken")
+          : null;
+
+      // Only attempt to get profile if we have a token
+      if (token) {
+        const response = await authApi.getProfile();
+
+        // Only update the state if we have valid user data
+        if (response.success && response.data) {
+          set({ user: response.data, loading: false, initialized: true });
+        } else {
+          // If we don't have valid user data, clear token and set initialized to true
+          localStorage.removeItem("authToken");
+          set({ loading: false, initialized: true });
+        }
       } else {
-        // If we don't have valid user data, set initialized to true but leave user as null
+        // No token found, mark as initialized but not logged in
         set({ loading: false, initialized: true });
       }
     } catch (error: unknown) {
       const apiError = error as ApiError;
       // Don't set error for 401 (unauthorized), as it's expected when not logged in
-      if (apiError.response?.status !== 401) {
+      if (apiError.response?.status === 401) {
+        // Clear invalid token
+        localStorage.removeItem("authToken");
+      } else if (apiError.response?.status !== 401) {
         set({
           error:
             apiError.response?.data?.message || "Failed to get user profile",

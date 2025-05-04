@@ -27,10 +27,24 @@ const server = http.createServer(app);
 // Initialize Socket.io
 const io = socketio(server, {
   cors: {
-    origin:
-      process.env.NODE_ENV === "production"
-        ? process.env.FRONTEND_URL
-        : "http://localhost:3000",
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "https://task1-iota-olive.vercel.app",
+        "https://task2-azure-beta.vercel.app",
+        "https://task-management2-six.vercel.app",
+        "http://localhost:3000",
+      ];
+
+      // Allow requests with no origin
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log("Socket.io blocked origin:", origin);
+        callback(null, true); // Allow all origins temporarily to debug
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true,
   },

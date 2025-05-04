@@ -39,6 +39,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
     const newSocket = io(SOCKET_URL, {
       withCredentials: true,
+      transports: ["polling", "websocket"],
     });
 
     // Set socket in state

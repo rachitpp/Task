@@ -189,6 +189,26 @@ export const userApi = {
 };
 
 // Add request interceptor to handle errors globally
+api.interceptors.request.use(
+  (config) => {
+    // Ensure withCredentials is always set to true for cross-origin requests
+    config.withCredentials = true;
+
+    // If there's JWT token in localStorage, add it to headers
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor to handle errors globally
 api.interceptors.response.use(
   (response) => response,
   (error) => {
