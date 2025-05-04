@@ -150,7 +150,8 @@ export const notificationApi = {
 // User services
 export const userApi = {
   getUsers: async () => {
-    const response = await api.get("/users");
+    // Use the assignable users endpoint accessible to all authenticated users
+    const response = await api.get("/users/assignable");
     return response.data;
   },
 
@@ -176,8 +177,13 @@ export const userApi = {
     return response.data;
   },
 
+  updateUserRole: async (id: string, role: "user" | "manager" | "admin") => {
+    const response = await api.patch(`/users/${id}/role`, { role });
+    return response.data;
+  },
+
   deleteUser: async (id: string) => {
-    const response = await api.delete(`/users/${id}`);
+    const response = await api.delete(`/users/test/${id}`);
     return response.data;
   },
 };

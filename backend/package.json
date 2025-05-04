@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "seed:admin": "node src/config/seedAdmin.js"
   },
   "keywords": [
     "task",

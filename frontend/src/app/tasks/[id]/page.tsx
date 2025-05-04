@@ -177,26 +177,59 @@ const TaskDetailPage: React.FC<TaskDetailPageProps> = ({ params }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Link href="/dashboard" className="text-blue-600 hover:underline">
-          &larr; Back to Dashboard
+    <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-sm p-4 mb-4 mt-16 pt-4 border border-gray-100">
+      <div className="mb-4 mt-2">
+        <Link
+          href="/dashboard"
+          className="text-blue-600 hover:underline text-sm flex items-center"
+        >
+          <svg
+            className="w-4 h-4 mr-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          Back to Dashboard
         </Link>
       </div>
 
       {updateError && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm mb-3">
           {updateError}
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-lg overflow-hidden">
         {isEditing ? (
           // Edit form
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Edit Task</h1>
+          <div className="p-4">
+            <h1 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+              <svg
+                className="w-5 h-5 mr-2 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              Edit Task
+            </h1>
             <form onSubmit={handleUpdate}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label
                     className="block text-gray-700 font-medium mb-2"
@@ -400,33 +433,72 @@ const TaskDetailPage: React.FC<TaskDetailPageProps> = ({ params }) => {
           </div>
         ) : (
           // View mode
-          <div className="p-6">
-            <div className="flex justify-between items-start mb-6">
-              <h1 className="text-2xl font-bold text-gray-800">{task.title}</h1>
+          <div className="p-4">
+            <div className="flex justify-between items-start mb-4">
+              <h1 className="text-xl font-semibold text-gray-800 flex items-center">
+                {task.priority === "high" && (
+                  <span className="w-2 h-2 bg-red-500 rounded-full mr-2 inline-block"></span>
+                )}
+                {task.priority === "medium" && (
+                  <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2 inline-block"></span>
+                )}
+                {task.priority === "low" && (
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2 inline-block"></span>
+                )}
+                {task.title}
+              </h1>
               {canEdit && (
                 <div className="flex space-x-2">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="px-3 py-1 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200"
+                    className="px-2.5 py-1 text-sm bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 flex items-center"
                   >
+                    <svg
+                      className="w-3.5 h-3.5 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      ></path>
+                    </svg>
                     Edit
                   </button>
                   <button
                     onClick={handleDelete}
-                    className="px-3 py-1 bg-red-100 text-red-800 rounded-md hover:bg-red-200"
+                    className="px-2.5 py-1 text-sm bg-red-50 text-red-700 rounded-md hover:bg-red-100 flex items-center"
                   >
+                    <svg
+                      className="w-3.5 h-3.5 mr-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
+                    </svg>
                     Delete
                   </button>
                 </div>
               )}
             </div>
 
-            <div className="mb-8">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">Status</h3>
+                  <h3 className="text-xs font-medium text-gray-500">Status</h3>
                   <span
-                    className={`mt-1 inline-block px-2.5 py-0.5 rounded-full text-sm font-medium ${getStatusColor(
+                    className={`mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
                       task.status
                     )}`}
                   >
@@ -435,11 +507,11 @@ const TaskDetailPage: React.FC<TaskDetailPageProps> = ({ params }) => {
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">
+                  <h3 className="text-xs font-medium text-gray-500">
                     Priority
                   </h3>
                   <span
-                    className={`mt-1 inline-block px-2.5 py-0.5 rounded-full text-sm font-medium ${getPriorityColor(
+                    className={`mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
                       task.priority
                     )}`}
                   >
@@ -448,58 +520,58 @@ const TaskDetailPage: React.FC<TaskDetailPageProps> = ({ params }) => {
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">
+                  <h3 className="text-xs font-medium text-gray-500">
                     Assigned To
                   </h3>
-                  <p className="mt-1 text-gray-800">
+                  <p className="mt-1 text-sm text-gray-800">
                     {task.assignedTo ? task.assignedTo.name : "Unassigned"}
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">
+                  <h3 className="text-xs font-medium text-gray-500">
                     Created By
                   </h3>
-                  <p className="mt-1 text-gray-800">
+                  <p className="mt-1 text-sm text-gray-800">
                     {task.creator ? task.creator.name : "Unknown"}
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">
+                  <h3 className="text-xs font-medium text-gray-500">
                     Due Date
                   </h3>
-                  <p className="mt-1 text-gray-800">
+                  <p className="mt-1 text-sm text-gray-800">
                     {task.dueDate ? formatDate(task.dueDate) : "No due date"}
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">
+                  <h3 className="text-xs font-medium text-gray-500">
                     Created On
                   </h3>
-                  <p className="mt-1 text-gray-800">
+                  <p className="mt-1 text-sm text-gray-800">
                     {formatDate(task.createdAt)}
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">
+                  <h3 className="text-xs font-medium text-gray-500">
                     Last Updated
                   </h3>
-                  <p className="mt-1 text-gray-800">
+                  <p className="mt-1 text-sm text-gray-800">
                     {formatDate(task.updatedAt)}
                   </p>
                 </div>
 
                 {task.isRecurring && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">
+                    <h3 className="text-xs font-medium text-gray-500">
                       Recurrence
                     </h3>
-                    <p className="mt-1 text-gray-800 capitalize">
+                    <p className="mt-1 text-sm text-gray-800 capitalize">
                       {task.recurrencePattern}
                     </p>
                   </div>
@@ -507,15 +579,15 @@ const TaskDetailPage: React.FC<TaskDetailPageProps> = ({ params }) => {
               </div>
 
               {task.tags && task.tags.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">
+                <div className="mb-4">
+                  <h3 className="text-xs font-medium text-gray-500 mb-1">
                     Tags
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {task.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
                       >
                         {tag}
                       </span>
@@ -525,14 +597,14 @@ const TaskDetailPage: React.FC<TaskDetailPageProps> = ({ params }) => {
               )}
 
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">
+                <h3 className="text-xs font-medium text-gray-500 mb-1">
                   Description
                 </h3>
-                <div className="mt-1 prose prose-sm max-w-none text-gray-800">
+                <div className="mt-1 prose prose-sm max-w-none text-gray-700">
                   {task.description ? (
-                    <p>{task.description}</p>
+                    <p className="text-sm">{task.description}</p>
                   ) : (
-                    <p className="text-gray-500 italic">
+                    <p className="text-sm text-gray-500 italic">
                       No description provided.
                     </p>
                   )}

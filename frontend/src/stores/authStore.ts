@@ -77,9 +77,14 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     try {
-      set({ loading: true, error: null });
+      // First set loading and clear user state
+      set({ loading: true, error: null, user: null });
+
+      // Then make the API call
       await authApi.logout();
-      set({ user: null, loading: false });
+
+      // Finally set loading to false but keep initialized true
+      set({ loading: false });
     } catch (error: unknown) {
       const apiError = error as ApiError;
       set({

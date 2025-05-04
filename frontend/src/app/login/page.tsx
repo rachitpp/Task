@@ -54,52 +54,38 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md p-8 m-auto bg-white rounded-lg shadow-lg card-transition"
+        className="w-full max-w-md p-6 m-auto bg-white rounded-xl shadow-md border border-gray-100"
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-          className="flex justify-center mb-8"
-        >
-          <h1 className="text-3xl font-bold gradient-text">Task Management</h1>
-        </motion.div>
+        <div className="flex justify-center mb-4">
+          <h1 className="text-2xl font-bold text-center">
+            <span className="text-blue-600">Task</span> Management
+          </h1>
+        </div>
 
-        <motion.h2
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="text-2xl font-semibold text-center text-gray-700 mb-6"
-        >
+        <h2 className="text-xl font-semibold text-center text-gray-800 mb-5">
           Login to your account
-        </motion.h2>
+        </h2>
 
         {(authError || formError) && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
-            className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded"
+            className="mb-4 p-2 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg"
           >
             {authError || formError}
           </motion.div>
         )}
 
-        <motion.form
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          onSubmit={handleSubmit}
-          className="space-y-4"
-        >
-          <div className="mb-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="mb-3">
             <label
               htmlFor="email"
-              className="block text-gray-700 text-sm font-medium mb-2"
+              className="block text-gray-700 text-sm font-medium mb-1"
             >
               Email
             </label>
@@ -108,16 +94,16 @@ const LoginPage = () => {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               placeholder="Enter your email"
               required
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <label
               htmlFor="password"
-              className="block text-gray-700 text-sm font-medium mb-2"
+              className="block text-gray-700 text-sm font-medium mb-1"
             >
               Password
             </label>
@@ -126,17 +112,17 @@ const LoginPage = () => {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               placeholder="Enter your password"
               required
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 disabled:opacity-50 transition-colors duration-200"
+              className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50 disabled:opacity-50 transition-colors duration-200 shadow-sm"
             >
               {loading ? (
                 <div className="flex items-center justify-center">
@@ -168,21 +154,16 @@ const LoginPage = () => {
             </button>
           </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="text-center text-gray-600 text-sm"
-          >
+          <p className="text-center text-gray-600 text-sm">
             Don&apos;t have an account?{" "}
             <Link
               href="/register"
-              className="text-blue-600 hover:text-blue-800 transition-colors duration-200"
+              className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200"
             >
               Register
             </Link>
-          </motion.p>
-        </motion.form>
+          </p>
+        </form>
       </motion.div>
     </div>
   );

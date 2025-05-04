@@ -39,13 +39,13 @@ const Navigation: React.FC = () => {
   // Handle non-authenticated users
   if (!user) {
     return (
-      <div className="flex items-center space-x-4">
-        <Link href="/login" className="text-gray-600 hover:text-gray-900">
+      <div className="flex items-center space-x-3">
+        <Link href="/login" className="text-gray-800 hover:text-black">
           Login
         </Link>
         <Link
           href="/register"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          className="bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700"
         >
           Register
         </Link>
@@ -55,14 +55,14 @@ const Navigation: React.FC = () => {
 
   return (
     <div className="relative">
-      <div className="flex items-center space-x-4">
-        <nav className="hidden md:flex items-center space-x-4">
+      <div className="flex items-center space-x-3">
+        <nav className="hidden md:flex items-center space-x-2">
           <Link
             href="/dashboard"
-            className={`text-sm px-3 py-2 rounded-md ${
+            className={`text-sm px-2.5 py-1.5 rounded-md ${
               isActive("/dashboard")
-                ? "bg-gray-100 text-gray-900"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                ? "bg-gray-100 text-black"
+                : "text-gray-800 hover:text-black hover:bg-gray-50"
             }`}
           >
             Dashboard
@@ -70,10 +70,10 @@ const Navigation: React.FC = () => {
 
           <Link
             href="/tasks"
-            className={`text-sm px-3 py-2 rounded-md ${
+            className={`text-sm px-2.5 py-1.5 rounded-md ${
               isActive("/tasks")
-                ? "bg-gray-100 text-gray-900"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                ? "bg-gray-100 text-black"
+                : "text-gray-800 hover:text-black hover:bg-gray-50"
             }`}
           >
             Tasks
@@ -81,10 +81,10 @@ const Navigation: React.FC = () => {
 
           <Link
             href="/tasks/recurring"
-            className={`text-sm px-3 py-2 rounded-md ${
+            className={`text-sm px-2.5 py-1.5 rounded-md ${
               isActive("/tasks/recurring")
-                ? "bg-gray-100 text-gray-900"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                ? "bg-gray-100 text-black"
+                : "text-gray-800 hover:text-black hover:bg-gray-50"
             }`}
           >
             Recurring Tasks
@@ -93,10 +93,10 @@ const Navigation: React.FC = () => {
           <RoleGuard allowedRoles={["admin", "manager"]}>
             <Link
               href="/analytics"
-              className={`text-sm px-3 py-2 rounded-md ${
+              className={`text-sm px-2.5 py-1.5 rounded-md ${
                 isActive("/analytics")
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  ? "bg-gray-100 text-black"
+                  : "text-gray-800 hover:text-black hover:bg-gray-50"
               }`}
             >
               Analytics
@@ -106,10 +106,10 @@ const Navigation: React.FC = () => {
           <RoleGuard allowedRoles={["admin"]}>
             <Link
               href="/admin"
-              className={`text-sm px-3 py-2 rounded-md ${
+              className={`text-sm px-2.5 py-1.5 rounded-md ${
                 isActive("/admin")
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  ? "bg-gray-100 text-black"
+                  : "text-gray-800 hover:text-black hover:bg-gray-50"
               }`}
             >
               Admin
@@ -119,11 +119,13 @@ const Navigation: React.FC = () => {
 
         <button
           onClick={toggleMenu}
-          className="relative flex items-center text-gray-600 hover:text-gray-900 focus:outline-none"
+          className="relative flex items-center text-gray-800 hover:text-black focus:outline-none"
         >
           <span className="sr-only">Open user menu</span>
           <div className="flex items-center">
-            <span className="hidden md:block text-sm mr-2">{user.name}</span>
+            <span className="hidden md:block text-sm mr-2 font-medium">
+              {user.name}
+            </span>
             <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">
               {user.name?.charAt(0).toUpperCase()}
             </div>
@@ -134,7 +136,7 @@ const Navigation: React.FC = () => {
       {/* Mobile menu button */}
       <button
         onClick={toggleMenu}
-        className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
+        className="md:hidden inline-flex items-center justify-center p-1.5 rounded-md text-gray-800 hover:text-black hover:bg-gray-100 focus:outline-none"
       >
         <span className="sr-only">Open main menu</span>
         <svg
@@ -155,14 +157,14 @@ const Navigation: React.FC = () => {
       {/* User dropdown menu */}
       {isMenuOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-          <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-100">
+          <div className="px-3 py-1.5 text-xs text-gray-700 border-b border-gray-100">
             Signed in as <span className="font-semibold">{user.email}</span>
           </div>
 
           <Link
             href="/profile"
             onClick={closeMenu}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className="block px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100"
           >
             Your Profile
           </Link>
@@ -170,7 +172,7 @@ const Navigation: React.FC = () => {
           <Link
             href="/tasks"
             onClick={closeMenu}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:hidden"
+            className="block px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100 md:hidden"
           >
             Tasks
           </Link>
@@ -178,7 +180,7 @@ const Navigation: React.FC = () => {
           <Link
             href="/tasks/recurring"
             onClick={closeMenu}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:hidden"
+            className="block px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100 md:hidden"
           >
             Recurring Tasks
           </Link>
@@ -187,7 +189,7 @@ const Navigation: React.FC = () => {
             <Link
               href="/analytics"
               onClick={closeMenu}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:hidden"
+              className="block px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100 md:hidden"
             >
               Analytics
             </Link>
@@ -197,15 +199,17 @@ const Navigation: React.FC = () => {
             <Link
               href="/admin"
               onClick={closeMenu}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 md:hidden"
+              className="block px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100 md:hidden"
             >
-              Admin Panel
+              Admin
             </Link>
           </RoleGuard>
 
+          <hr className="my-1 border-gray-100" />
+
           <button
             onClick={handleLogout}
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className="block w-full text-left px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100"
           >
             Sign out
           </button>

@@ -16,7 +16,7 @@ const Sidebar: React.FC = () => {
       href: "/dashboard",
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -26,13 +26,30 @@ const Sidebar: React.FC = () => {
         </svg>
       ),
       roles: ["user", "manager", "admin"],
+      category: "main",
+    },
+    {
+      name: "Notifications",
+      href: "/notifications",
+      icon: (
+        <svg
+          className="w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+        </svg>
+      ),
+      roles: ["user", "manager", "admin"],
+      category: "main",
     },
     {
       name: "My Tasks",
       href: "/tasks/my-tasks",
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -46,13 +63,14 @@ const Sidebar: React.FC = () => {
         </svg>
       ),
       roles: ["user", "manager", "admin"],
+      category: "tasks",
     },
     {
       name: "Assigned Tasks",
       href: "/tasks/assigned",
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -65,13 +83,14 @@ const Sidebar: React.FC = () => {
         </svg>
       ),
       roles: ["user", "manager", "admin"],
+      category: "tasks",
     },
     {
       name: "Create Task",
       href: "/tasks/create",
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -84,13 +103,14 @@ const Sidebar: React.FC = () => {
         </svg>
       ),
       roles: ["user", "manager", "admin"],
+      category: "tasks",
     },
     {
       name: "All Tasks",
       href: "/tasks",
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -99,13 +119,14 @@ const Sidebar: React.FC = () => {
         </svg>
       ),
       roles: ["manager", "admin"],
+      category: "tasks",
     },
     {
       name: "User Management",
       href: "/users",
       icon: (
         <svg
-          className="w-6 h-6"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -114,6 +135,7 @@ const Sidebar: React.FC = () => {
         </svg>
       ),
       roles: ["admin"],
+      category: "admin",
     },
   ];
 
@@ -122,37 +144,120 @@ const Sidebar: React.FC = () => {
     user ? item.roles.includes(user.role) : false
   );
 
+  // Group navigation items by category
+  const categories = filteredNavItems.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = [];
+    }
+    acc[item.category].push(item);
+    return acc;
+  }, {} as Record<string, typeof navigationItems>);
+
   return (
     <aside
       id="logo-sidebar"
-      className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-white border-r border-gray-200 transition-transform -translate-x-full lg:translate-x-0"
+      className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-white border-r border-gray-200 shadow-sm transition-transform -translate-x-full lg:translate-x-0 overflow-hidden"
       aria-label="Sidebar"
     >
-      <div className="h-full px-3 pb-4 overflow-y-auto bg-white">
-        <ul className="space-y-2 font-medium">
-          {filteredNavItems.map((item) => (
-            <li key={item.href}>
+      <div className="h-full px-3 py-4 overflow-y-auto bg-white">
+        {/* Main Navigation */}
+        <ul className="space-y-1 font-medium">
+          {/* Dashboard with special spacing */}
+          {categories.main?.map((item) => (
+            <li key={item.href} className="mt-1 mb-3">
               <Link
                 href={item.href}
-                className={`flex items-center p-2 rounded-lg ${
+                className={`flex items-center p-2 rounded-lg transition-all duration-200 compact-text ${
                   pathname === item.href
-                    ? "bg-blue-100 text-blue-600"
-                    : "text-gray-900 hover:bg-gray-100"
+                    ? "bg-blue-100 text-blue-700 shadow-sm"
+                    : "text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 <div
-                  className={`${
+                  className={`flex items-center justify-center rounded-md w-7 h-7 flex-shrink-0 ${
                     pathname === item.href
-                      ? "text-blue-600"
-                      : "text-gray-500 group-hover:text-gray-900"
+                      ? "bg-blue-200 text-blue-700"
+                      : "text-gray-500 group-hover:text-blue-600"
                   }`}
                 >
                   {item.icon}
                 </div>
-                <span className="ms-3">{item.name}</span>
+                <span className="ms-2 font-medium truncate">{item.name}</span>
               </Link>
             </li>
           ))}
+
+          {/* Task Section */}
+          {categories.tasks?.length > 0 && (
+            <>
+              <li className="pt-1">
+                <div className="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider truncate compact-text-sm">
+                  Task Management
+                </div>
+              </li>
+              {categories.tasks.map((item) => (
+                <li key={item.href} className="mt-1">
+                  <Link
+                    href={item.href}
+                    className={`flex items-center p-2 rounded-lg transition-all duration-200 compact-text ${
+                      pathname === item.href
+                        ? "bg-blue-100 text-blue-700 shadow-sm"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div
+                      className={`flex items-center justify-center rounded-md w-7 h-7 flex-shrink-0 ${
+                        pathname === item.href
+                          ? "bg-blue-200 text-blue-700"
+                          : "text-gray-500 group-hover:text-blue-600"
+                      }`}
+                    >
+                      {item.icon}
+                    </div>
+                    <span className="ms-2 font-medium truncate">
+                      {item.name}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </>
+          )}
+
+          {/* Admin Section */}
+          {categories.admin?.length > 0 && (
+            <>
+              <li className="pt-3 mt-1">
+                <div className="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider truncate compact-text-sm">
+                  Administration
+                </div>
+              </li>
+              {categories.admin.map((item) => (
+                <li key={item.href} className="mt-1">
+                  <Link
+                    href={item.href}
+                    className={`flex items-center p-2 rounded-lg transition-all duration-200 compact-text ${
+                      pathname === item.href
+                        ? "bg-blue-100 text-blue-700 shadow-sm"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div
+                      className={`flex items-center justify-center rounded-md w-7 h-7 flex-shrink-0 ${
+                        pathname === item.href
+                          ? "bg-blue-200 text-blue-700"
+                          : "text-gray-500 group-hover:text-blue-600"
+                      }`}
+                    >
+                      {item.icon}
+                    </div>
+                    <span className="ms-2 font-medium truncate">
+                      {item.name}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </>
+          )}
         </ul>
       </div>
     </aside>

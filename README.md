@@ -183,3 +183,42 @@ This project is MIT licensed.
 
 - Assisted by AI tools for code scaffolding and boilerplate generation
 - UI design inspired by modern productivity applications
+
+## Administrator Setup
+
+The application requires at least one administrator account to manage users and roles. There are several ways to create the initial administrator:
+
+### Option 1: Use the Admin Seeding Script
+
+Run the following command to create an initial admin user:
+
+```bash
+npm run seed:admin
+```
+
+This will create an admin user with the following credentials (which can be customized via environment variables):
+
+- Email: admin@example.com (override with ADMIN_EMAIL)
+- Password: adminPassword123! (override with ADMIN_PASSWORD)
+- Name: Admin User (override with ADMIN_NAME)
+
+### Option 2: Enable First-User-As-Admin Mode
+
+Set the following environment variable in your .env file:
+
+```
+FIRST_USER_ADMIN=true
+```
+
+With this setting, the first user who registers in the system will automatically be assigned the admin role.
+
+### Option 3: Manual Database Update
+
+If you already have users in the system but no admin, you can update a user's role directly in the database:
+
+```javascript
+// Using MongoDB shell
+db.users.updateOne({ email: "user@example.com" }, { $set: { role: "admin" } });
+```
+
+**Important Security Note:** After setting up your administrator account, if you used Option 2 (FIRST_USER_ADMIN), make sure to set this environment variable back to `false` to prevent any security issues.

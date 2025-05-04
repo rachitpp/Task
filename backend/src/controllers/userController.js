@@ -278,10 +278,17 @@ const getUserById = async (req, res) => {
  */
 const updateUserRole = async (req, res) => {
   try {
+    console.log("Update user role request received:", {
+      userId: req.params.id,
+      requestBody: req.body,
+      requestUser: req.user?._id,
+    });
+
     const { role } = req.body;
 
     // Validate role
     if (!role || !["user", "manager", "admin"].includes(role)) {
+      console.log("Invalid role provided:", role);
       return res.status(400).json({
         success: false,
         message: "Invalid role value",
@@ -292,6 +299,7 @@ const updateUserRole = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (!user) {
+      console.log("User not found with ID:", req.params.id);
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -300,6 +308,7 @@ const updateUserRole = async (req, res) => {
 
     // Prevent admin from changing their own role
     if (user._id.toString() === req.user._id.toString()) {
+      console.log("Admin attempting to change own role");
       return res.status(400).json({
         success: false,
         message: "Cannot change your own role",
@@ -309,6 +318,11 @@ const updateUserRole = async (req, res) => {
     // Update the user role
     user.role = role;
     await user.save();
+
+    console.log("User role updated successfully:", {
+      userId: user._id,
+      newRole: role,
+    });
 
     // Create audit log for role update
     await AuditLog.create({
@@ -336,6 +350,8 @@ const updateUserRole = async (req, res) => {
     });
   } catch (error) {
     console.error("Update user role error:", error);
+    console.error("Error stack:", error.stack);
+
     if (error.kind === "ObjectId") {
       return res.status(404).json({
         success: false,

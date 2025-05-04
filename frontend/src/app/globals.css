@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
 }
 
 @theme inline {
@@ -15,7 +15,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ededed;
+    --foreground: #ffffff;
   }
 }
 
@@ -23,4 +23,202 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom utility classes */
+.text-darker {
+  color: #000000 !important;
+}
+
+.reduced-padding {
+  padding: 0.5rem !important;
+}
+
+.reduced-padding-x {
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+
+.reduced-padding-y {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+/* New compact utility classes */
+.compact-text {
+  font-size: 0.92rem !important;
+  line-height: 1.5 !important;
+}
+
+.compact-text-sm {
+  font-size: 0.85rem !important;
+  line-height: 1.5 !important;
+}
+
+.compact-sidebar-item {
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.compact-card {
+  padding: 0.6rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.compact-btn {
+  padding: 0.25rem 0.75rem !important;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.9rem;
+  background-color: #f0f4ff;
+  border-radius: 0.375rem;
+  color: #3b82f6;
+  transition: all 0.2s;
+  border: 1px solid #dbeafe;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.back-btn:hover {
+  background-color: #dbeafe;
+  color: #2563eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.back-btn svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-right: 0.4rem;
+}
+
+/* Global style overrides for text and padding */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #000000;
+  margin-bottom: 0.5rem;
+  font-size: 95% !important; /* Reduced font size for all headings */
+}
+
+p {
+  color: #333333;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem !important; /* Reduced font size for paragraphs */
+}
+
+/* Make all text inputs and buttons more compact */
+button,
+input,
+select,
+textarea {
+  padding: 0.375rem 0.75rem !important;
+  font-size: 0.9rem !important;
+}
+
+/* Default button styles with less padding */
+.btn,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  padding: 0.375rem 0.75rem !important;
+  font-size: 0.9rem !important;
+}
+
+/* Card and container padding reduction */
+.card,
+.container,
+.box,
+.panel,
+section,
+article,
+aside,
+.content {
+  padding: 0.6rem !important;
+}
+
+/* Make list items more compact */
+li {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  margin-top: 0.15rem !important;
+  margin-bottom: 0.15rem !important;
+}
+
+/* Ensure all gray text is darker */
+.text-gray-400,
+.text-gray-500,
+.text-gray-600 {
+  color: #4b5563 !important; /* gray-700 equivalent */
+}
+
+/* Ensure all form inputs have darker text */
+input,
+select,
+textarea {
+  color: #000000 !important;
+}
+
+/* Table cells with reduced padding */
+td,
+th {
+  padding: 0.5rem 0.75rem !important;
+}
+
+/* Custom gradients and patterns */
+.gradient-text {
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.bg-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* Custom animations */
+.hover-lift {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+}
+
+/* Button effects */
+.button-glow {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.button-glow::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.button-glow:hover::after {
+  opacity: 1;
 }

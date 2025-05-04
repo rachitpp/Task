@@ -56,14 +56,14 @@ const AssignedTasksPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+    <div className="container mx-auto px-4 py-8 mt-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 mt-4">
         <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
           Tasks Assigned to Me {dueDate === "overdue" && " (Overdue)"}
         </h1>
         <Link
           href="/tasks/create"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-3 md:mt-0"
         >
           Create New Task
         </Link>

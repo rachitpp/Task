@@ -104,7 +104,7 @@ const NotificationDropdown: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100 relative"
+        className="p-1.5 text-gray-700 rounded-lg hover:text-gray-900 hover:bg-gray-100 relative"
       >
         <span className="sr-only">View notifications</span>
         <svg
@@ -124,12 +124,12 @@ const NotificationDropdown: React.FC = () => {
 
       {isOpen && (
         <div className="absolute right-0 z-50 mt-2 overflow-hidden bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-80">
-          <div className="flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+          <div className="flex items-center justify-between px-3 py-1.5 text-sm font-medium text-gray-900 bg-gray-50">
             <span>Notifications</span>
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllAsRead()}
-                className="text-xs text-blue-600 hover:text-blue-800"
+                className="text-xs text-blue-700 hover:text-blue-900"
               >
                 Mark all as read
               </button>
@@ -137,11 +137,11 @@ const NotificationDropdown: React.FC = () => {
           </div>
           <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
             {loading ? (
-              <div className="px-4 py-3 text-sm text-gray-500 text-center">
+              <div className="px-3 py-2 text-sm text-gray-700 text-center">
                 Loading...
               </div>
             ) : notifications.length === 0 ? (
-              <div className="px-4 py-3 text-sm text-gray-500 text-center">
+              <div className="px-3 py-2 text-sm text-gray-700 text-center">
                 No notifications
               </div>
             ) : (
@@ -154,23 +154,23 @@ const NotificationDropdown: React.FC = () => {
                       notification.task?._id
                     )
                   }
-                  className={`px-4 py-3 hover:bg-gray-50 cursor-pointer ${
+                  className={`px-3 py-2 hover:bg-gray-50 cursor-pointer ${
                     !notification.isRead ? "bg-blue-50" : ""
                   }`}
                 >
-                  <div className="flex items-center mb-2">
+                  <div className="flex items-center mb-1">
                     <span className="font-medium text-sm text-gray-900">
                       {notification.title}
                     </span>
-                    <span className="ml-auto text-xs text-gray-500">
+                    <span className="ml-auto text-xs text-gray-700">
                       {formatTimeAgo(notification.createdAt)}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 line-clamp-2">
+                  <p className="text-sm text-gray-800 line-clamp-2">
                     {notification.message}
                   </p>
                   {!notification.isRead && (
-                    <span className="inline-block w-2 h-2 bg-blue-500 rounded-full ml-1"></span>
+                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full ml-1"></span>
                   )}
                 </div>
               ))
@@ -178,7 +178,7 @@ const NotificationDropdown: React.FC = () => {
           </div>
           <Link
             href="/notifications"
-            className="block px-4 py-2 text-sm text-center text-gray-700 hover:bg-gray-100"
+            className="block px-3 py-1.5 text-sm text-center text-gray-900 hover:bg-gray-100"
             onClick={() => setIsOpen(false)}
           >
             Show all notifications

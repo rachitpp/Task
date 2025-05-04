@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "@/components/Header";
+import AppLayout from "@/components/layout/AppLayout";
 
 export default function ProfileLayout({
   children,
@@ -7,9 +7,8 @@ export default function ProfileLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <Header />
-      <div className="pt-4">{children}</div>
-    </>
+    <AppLayout>
+      <div className="text-black">{children}</div>
+    </AppLayout>
   );
 }

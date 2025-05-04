@@ -38,11 +38,18 @@ const registerUser = async (req, res) => {
       });
     }
 
+    // Check if this is the first user in the system and if first-user-admin is enabled
+    const userCount = await User.countDocuments({});
+    const isFirstUser = userCount === 0;
+    const firstUserAsAdmin = process.env.FIRST_USER_ADMIN === "true";
+
     // Create new user
     const user = await User.create({
       name,
       email,
       password,
+      // If this is the first user and first-user-admin is enabled, make them an admin
+      role: isFirstUser && firstUserAsAdmin ? "admin" : "user",
     });
 
     if (user) {
@@ -55,6 +62,8 @@ const registerUser = async (req, res) => {
         details: {
           name: user.name,
           email: user.email,
+          role: user.role,
+          isFirstUser,
         },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],

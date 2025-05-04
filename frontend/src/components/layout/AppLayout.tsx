@@ -24,7 +24,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     }
   }, [initialized, initialize]);
 
-  // Redirect to login if not authenticated (except on auth pages)
+  // Redirect to login if not authenticated (except on auth pages and homepage)
   useEffect(() => {
     const authPages = [
       "/login",
@@ -33,8 +33,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       "/reset-password",
     ];
     const isAuthPage = authPages.some((page) => pathname?.startsWith(page));
+    const isHomePage = pathname === "/";
 
-    if (initialized && !loading && !user && !isAuthPage) {
+    // Skip redirect if on auth pages or homepage
+    if (initialized && !loading && !user && !isAuthPage && !isHomePage) {
       router.push("/login");
     }
   }, [user, loading, initialized, pathname, router]);
@@ -55,7 +57,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     }
   }, [user, initialized, fetchUnreadCount]);
 
-  // Don't render layout on auth pages
+  // Don't render layout on auth pages or homepage for unauthenticated users
   const authPages = [
     "/login",
     "/register",
@@ -63,19 +65,19 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     "/reset-password",
   ];
   const isAuthPage = authPages.some((page) => pathname?.startsWith(page));
+  const isHomePage = pathname === "/";
 
-  if (isAuthPage || !initialized || (initialized && !user)) {
+  // Special handling for homepage and auth pages
+  if (isAuthPage || isHomePage || !initialized || (initialized && !user)) {
     return <>{children}</>;
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
       <Sidebar />
-      <div className="flex flex-col flex-1 w-full overflow-hidden lg:ml-64">
-        <Navbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 mt-16">
-          {children}
-        </main>
+      <div className="p-4 lg:p-6 lg:ml-64 pt-32 transition-all duration-300 overflow-visible">
+        <div className="w-full overflow-visible">{children}</div>
       </div>
     </div>
   );
