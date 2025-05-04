@@ -90,10 +90,10 @@ if (process.env.NODE_ENV === "development") {
 // Enable CORS
 app.use(
   cors({
-    origin: "http://localhost:3000", // Explicitly set the frontend origin for development
+    origin: process.env.FRONTEND_URL || "http://localhost:3000", // Use environment variable
     credentials: true, // This allows cookies to be sent with requests
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], // Add all methods you need
-    allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
