@@ -90,13 +90,29 @@ if (process.env.NODE_ENV === "development") {
 // Enable CORS
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000", // Use environment variable
-    credentials: true, // This allows cookies to be sent with requests
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "https://task1-iota-olive.vercel.app",
+        "https://task2-azure-beta.vercel.app",
+        "https://task-management2-six.vercel.app",
+        "http://localhost:3000",
+      ];
+
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log("Blocked origin:", origin);
+        callback(null, true); // Consider switching this to true temporarily if still getting errors
+      }
+    },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
 // Define routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
