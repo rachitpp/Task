@@ -57,6 +57,14 @@ const userSockets = new Map();
 io.on("connection", (socket) => {
   console.log("New client connected");
 
+  // Check for token in socket handshake
+  const token = socket.handshake.auth.token;
+  if (token) {
+    console.log("Socket connection has auth token");
+  } else {
+    console.log("No auth token in socket connection");
+  }
+
   // Handle user authentication for socket
   socket.on("authenticate", (userId) => {
     // Log authentication attempt

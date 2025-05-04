@@ -37,9 +37,19 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     // Initialize socket connection
     const SOCKET_URL =
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+    // Get auth token from localStorage
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+
     const newSocket = io(SOCKET_URL, {
       withCredentials: true,
       transports: ["polling", "websocket"],
+      auth: {
+        token: token,
+      },
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
 
     // Set socket in state

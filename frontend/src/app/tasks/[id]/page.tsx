@@ -9,14 +9,14 @@ import useUserStore from "@/stores/userStore";
 import { format } from "date-fns";
 
 interface TaskDetailPageProps {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  };
 }
 
 const TaskDetailPage: React.FC<TaskDetailPageProps> = ({ params }) => {
   const router = useRouter();
-  const { id } = React.use(params);
+  const id = params.id;
   const { user } = useAuthStore();
   const { users, fetchUsers } = useUserStore();
   const { task, loading, error, fetchTaskById, updateTask, deleteTask } =
