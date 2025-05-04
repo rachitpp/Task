@@ -78,6 +78,7 @@ const registerUser = async (req, res) => {
       // Return user data without password
       res.status(201).json({
         success: true,
+        token: token,
         data: {
           _id: user._id,
           name: user.name,
@@ -149,6 +150,7 @@ const loginUser = async (req, res) => {
       // Return user data without password
       res.json({
         success: true,
+        token: token,
         data: {
           _id: user._id,
           name: user.name,

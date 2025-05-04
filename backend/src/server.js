@@ -59,6 +59,9 @@ io.on("connection", (socket) => {
 
   // Handle user authentication for socket
   socket.on("authenticate", (userId) => {
+    // Log authentication attempt
+    console.log(`Auth attempt for user ${userId}`);
+
     userSockets.set(userId, socket.id);
     console.log(`User ${userId} authenticated with socket ${socket.id}`);
 

@@ -32,7 +32,8 @@ const setTokenCookie = (res, token) => {
     ),
     httpOnly: true, // Cannot be accessed by client-side JS
     secure: process.env.NODE_ENV === "production", // Only sent over HTTPS in production
-    sameSite: "lax", // CSRF protection, but less strict for development
+    sameSite: "none", // Allow cross-site cookies for different domains
+    path: "/",
   };
 
   res.cookie("jwt", token, cookieOptions);
