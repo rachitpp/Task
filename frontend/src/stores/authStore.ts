@@ -5,6 +5,7 @@ import {
   isLoggedOut,
   forceLogout,
   clearLogoutFlag,
+  hasRecentlyLoggedOut,
 } from "@/utils/logoutHelper";
 
 // Define the user type
@@ -31,6 +32,7 @@ interface AuthState {
   loading: boolean;
   error: string | null;
   initialized: boolean;
+  recentlyLoggedOut: boolean;
 
   // Actions
   login: (email: string, password: string) => Promise<void>;
@@ -49,10 +51,11 @@ const useAuthStore = create<AuthState>((set, get) => ({
   loading: false,
   error: null,
   initialized: false,
+  recentlyLoggedOut: false,
 
   login: async (email: string, password: string) => {
     try {
-      set({ loading: true, error: null });
+      set({ loading: true, error: null, recentlyLoggedOut: false });
 
       // Clear any previous logout flags first
       clearLogoutFlag();
@@ -76,7 +79,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
   register: async (name: string, email: string, password: string) => {
     try {
-      set({ loading: true, error: null });
+      set({ loading: true, error: null, recentlyLoggedOut: false });
 
       // Clear any previous logout flags first
       clearLogoutFlag();
@@ -101,6 +104,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
         error: null,
         user: null,
         initialized: true,
+        recentlyLoggedOut: true,
       });
 
       // Try to call the API logout endpoint
@@ -116,19 +120,27 @@ const useAuthStore = create<AuthState>((set, get) => ({
         loading: false,
         initialized: true,
         user: null,
+        recentlyLoggedOut: true,
       });
 
       // Use the dedicated logout utility for a complete reset
       forceLogout();
 
-      // Ensure auth state remains cleared even after redirect
-      setTimeout(() => {
+      // Extra insurance: use a repeated check after a delay to ensure
+      // the logout state persists after any redirects or refreshes
+      const ensureLoggedOut = () => {
         set({
           user: null,
           initialized: true,
           loading: false,
+          recentlyLoggedOut: true,
         });
-      }, 100);
+      };
+
+      // Set multiple timeouts for redundancy
+      setTimeout(ensureLoggedOut, 100);
+      setTimeout(ensureLoggedOut, 500);
+      setTimeout(ensureLoggedOut, 1000);
     } catch (error: unknown) {
       // Handle errors but still try to clear state
       const apiError = error as ApiError;
@@ -140,19 +152,25 @@ const useAuthStore = create<AuthState>((set, get) => ({
         error: apiError.response?.data?.message || "Failed to logout",
         user: null,
         initialized: true,
+        recentlyLoggedOut: true,
       });
 
       // Use force logout even if the API call fails
       forceLogout();
 
-      // Ensure auth state remains cleared even after redirect
-      setTimeout(() => {
+      // Extra insurance with multiple checks
+      const ensureLoggedOut = () => {
         set({
           user: null,
           initialized: true,
           loading: false,
+          recentlyLoggedOut: true,
         });
-      }, 100);
+      };
+
+      setTimeout(ensureLoggedOut, 100);
+      setTimeout(ensureLoggedOut, 500);
+      setTimeout(ensureLoggedOut, 1000);
     }
   },
 
@@ -172,14 +190,33 @@ const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   initialize: async () => {
-    // Always check for logout flags first
+    // Always check for recent logout first - highest priority check
+    if (hasRecentlyLoggedOut()) {
+      console.log(
+        "Found recent logout during initialization - staying logged out"
+      );
+      localStorage.removeItem("authToken");
+      set({
+        user: null,
+        loading: false,
+        initialized: true,
+        recentlyLoggedOut: true,
+      });
+      return;
+    }
+
+    // Otherwise check regular logout flags
     if (isLoggedOut()) {
       console.log(
         "Found logout flag during initialization - staying logged out"
       );
-      // User is logged out, make sure auth state reflects this
       localStorage.removeItem("authToken");
-      set({ user: null, loading: false, initialized: true });
+      set({
+        user: null,
+        loading: false,
+        initialized: true,
+        recentlyLoggedOut: true,
+      });
       return;
     }
 
@@ -187,6 +224,17 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
     try {
       set({ loading: true, error: null });
+
+      // One final check to ensure we don't try to log in after logout
+      if (hasRecentlyLoggedOut() || isLoggedOut()) {
+        set({
+          user: null,
+          loading: false,
+          initialized: true,
+          recentlyLoggedOut: true,
+        });
+        return;
+      }
 
       // Check if there's a token in localStorage
       const token =
@@ -201,13 +249,23 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
           // Only update the state if we have valid user data
           if (response.success && response.data) {
-            set({ user: response.data, loading: false, initialized: true });
+            set({
+              user: response.data,
+              loading: false,
+              initialized: true,
+              recentlyLoggedOut: false,
+            });
           } else {
             // If we don't have valid user data, clear token and set initialized
             localStorage.removeItem("authToken");
             // Also set logout flag to prevent auto-login attempts
             localStorage.setItem("logged_out", "true");
-            set({ user: null, loading: false, initialized: true });
+            set({
+              user: null,
+              loading: false,
+              initialized: true,
+              recentlyLoggedOut: true,
+            });
           }
         } catch (error) {
           // API error during initialization
@@ -215,11 +273,21 @@ const useAuthStore = create<AuthState>((set, get) => ({
           localStorage.removeItem("authToken");
           // Also set logout flag to prevent auto-login attempts
           localStorage.setItem("logged_out", "true");
-          set({ user: null, loading: false, initialized: true });
+          set({
+            user: null,
+            loading: false,
+            initialized: true,
+            recentlyLoggedOut: true,
+          });
         }
       } else {
         // No token found, mark as initialized but not logged in
-        set({ user: null, loading: false, initialized: true });
+        set({
+          user: null,
+          loading: false,
+          initialized: true,
+          recentlyLoggedOut: true,
+        });
       }
     } catch (error: unknown) {
       const apiError = error as ApiError;
@@ -235,7 +303,12 @@ const useAuthStore = create<AuthState>((set, get) => ({
             apiError.response?.data?.message || "Failed to get user profile",
         });
       }
-      set({ user: null, loading: false, initialized: true });
+      set({
+        user: null,
+        loading: false,
+        initialized: true,
+        recentlyLoggedOut: true,
+      });
     }
   },
 

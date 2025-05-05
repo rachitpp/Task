@@ -2,33 +2,57 @@
  * Complete logout utility to ensure all user data is cleared
  */
 
+// Set up a constant for the last logout tracking key
+const LAST_LOGOUT_KEY = "last_logout_timestamp";
+const LOGOUT_DURATION_MS = 5 * 60 * 1000; // 5 minutes in milliseconds
+
 // Force a complete logout, clearing all storage and redirecting to login
 export const forceLogout = async () => {
   console.log("Performing complete logout...");
 
+  // Track logout time first - before clearing storage
+  const logoutTime = Date.now();
+  try {
+    // Use multiple storage locations to ensure at least one persists
+    localStorage.setItem(LAST_LOGOUT_KEY, logoutTime.toString());
+    sessionStorage.setItem(LAST_LOGOUT_KEY, logoutTime.toString());
+
+    // Also set as a cookie for extra reliability
+    document.cookie = `${LAST_LOGOUT_KEY}=${logoutTime};path=/;max-age=300`;
+  } catch (e) {
+    console.error("Error setting logout timestamp:", e);
+  }
+
   // 1. Clear all browser storage
   try {
-    // Clear localStorage
-    localStorage.clear();
-
-    // Clear sessionStorage
-    sessionStorage.clear();
-
-    // Add a strong logout signal - do this AFTER clearing storage
-    sessionStorage.setItem("FORCE_LOGOUT", "true");
-    localStorage.setItem("FORCE_LOGOUT", "true");
-    localStorage.setItem("logged_out", "true");
-
-    // Add timestamp to logout signal to prevent stale checks
+    // Save the logout timestamp first
     const logoutTimestamp = Date.now().toString();
-    localStorage.setItem("logout_timestamp", logoutTimestamp);
-    sessionStorage.setItem("logout_timestamp", logoutTimestamp);
 
-    // Remove all cookies
+    // Clear localStorage but preserve logout signal
+    const logoutTimeValue = localStorage.getItem(LAST_LOGOUT_KEY);
+    localStorage.clear();
+    localStorage.setItem(LAST_LOGOUT_KEY, logoutTimeValue || logoutTimestamp);
+    localStorage.setItem("logout_timestamp", logoutTimestamp);
+    localStorage.setItem("logged_out", "true");
+    localStorage.setItem("FORCE_LOGOUT", "true");
+
+    // Clear sessionStorage but preserve logout signal
+    const sessionLogoutTimeValue = sessionStorage.getItem(LAST_LOGOUT_KEY);
+    sessionStorage.clear();
+    sessionStorage.setItem(
+      LAST_LOGOUT_KEY,
+      sessionLogoutTimeValue || logoutTimestamp
+    );
+    sessionStorage.setItem("logout_timestamp", logoutTimestamp);
+    sessionStorage.setItem("FORCE_LOGOUT", "true");
+
+    // Remove all cookies except the logout tracking cookie
     document.cookie.split(";").forEach(function (c) {
-      document.cookie = c
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      if (!c.trim().startsWith(LAST_LOGOUT_KEY)) {
+        document.cookie = c
+          .replace(/^ +/, "")
+          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      }
     });
 
     // Try to delete IndexedDB
@@ -112,8 +136,44 @@ export const hardReload = (path: string = window.location.pathname) => {
   }
 };
 
+// Check if user has logged out recently (within the defined duration)
+export const hasRecentlyLoggedOut = (): boolean => {
+  try {
+    // Check from multiple possible storage locations
+    const lsLogoutTime = localStorage.getItem(LAST_LOGOUT_KEY);
+    const ssLogoutTime = sessionStorage.getItem(LAST_LOGOUT_KEY);
+
+    // Get cookie value if exists
+    const cookieLogoutTime = document.cookie
+      .split(";")
+      .find((c) => c.trim().startsWith(`${LAST_LOGOUT_KEY}=`))
+      ?.split("=")[1];
+
+    // Use the most recent logout time from any source
+    const logoutTimeStr = lsLogoutTime || ssLogoutTime || cookieLogoutTime;
+
+    if (logoutTimeStr) {
+      const logoutTime = parseInt(logoutTimeStr);
+      const timeSinceLogout = Date.now() - logoutTime;
+
+      // If logged out within the configured duration, consider as "recently logged out"
+      return timeSinceLogout < LOGOUT_DURATION_MS;
+    }
+  } catch (e) {
+    console.error("Error checking recent logout:", e);
+  }
+
+  return false;
+};
+
 // Function to check if user is forcibly logged out
 export const isLoggedOut = () => {
+  // First check if user has recently logged out
+  if (hasRecentlyLoggedOut()) {
+    return true;
+  }
+
+  // Then check conventional flags
   const hasLogoutFlag =
     localStorage.getItem("logged_out") === "true" ||
     localStorage.getItem("FORCE_LOGOUT") === "true" ||
@@ -132,4 +192,11 @@ export const clearLogoutFlag = () => {
   sessionStorage.removeItem("FORCE_LOGOUT");
   localStorage.removeItem("logout_timestamp");
   sessionStorage.removeItem("logout_timestamp");
+
+  // Also clear the dedicated logout tracking
+  localStorage.removeItem(LAST_LOGOUT_KEY);
+  sessionStorage.removeItem(LAST_LOGOUT_KEY);
+
+  // Clear the cookie if it exists
+  document.cookie = `${LAST_LOGOUT_KEY}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
 };
