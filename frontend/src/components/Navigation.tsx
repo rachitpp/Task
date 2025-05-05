@@ -24,11 +24,13 @@ const Navigation: React.FC = () => {
     try {
       await logout();
       closeMenu();
-      // Redirect to homepage after successful logout
-      router.push("/");
+      // Force a hard reload and redirect
+      window.location.href = "/login";
     } catch (error) {
       // Handle any errors if needed
       console.error("Logout failed:", error);
+      // Still redirect even if the API call fails
+      window.location.href = "/login";
     }
   };
 

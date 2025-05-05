@@ -6,7 +6,10 @@ import { motion } from "framer-motion";
 import useAuthStore from "@/stores/authStore";
 
 export default function Home() {
-  const { user } = useAuthStore();
+  const { user, initialized } = useAuthStore();
+
+  // If auth state isn't initialized yet, don't render anything auth-dependent
+  const isAuthenticated = initialized && user;
 
   return (
     <div className="min-h-screen bg-white">
@@ -17,7 +20,7 @@ export default function Home() {
             <span className="text-blue-600">Task</span> Management
           </h1>
           <nav className="flex gap-4">
-            {user ? (
+            {isAuthenticated ? (
               <Link
                 href="/dashboard"
                 className="px-5 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 text-sm font-medium shadow-sm"
@@ -265,7 +268,7 @@ export default function Home() {
                 >
                   Try for Free
                 </Link>
-                {!user && (
+                {!isAuthenticated && (
                   <Link
                     href="/login"
                     className="px-6 py-3 border border-blue-200 text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-300 text-center text-sm font-medium"

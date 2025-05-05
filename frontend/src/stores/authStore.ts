@@ -82,10 +82,22 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     try {
-      // Also clear token from localStorage
+      // Clear all authentication data from storage
       if (typeof window !== "undefined") {
+        // Clear token and all local/session storage
         localStorage.removeItem("authToken");
-        sessionStorage.clear(); // Clear any session data
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // Also try to clear the IndexedDB if possible
+        try {
+          const request = indexedDB.deleteDatabase("taskManagementOfflineDB");
+          request.onsuccess = () =>
+            console.log("IndexedDB deleted successfully");
+          request.onerror = () => console.error("Error deleting IndexedDB");
+        } catch (dbError) {
+          console.error("Failed to delete IndexedDB:", dbError);
+        }
       }
 
       // First set loading and clear user state
@@ -95,7 +107,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
       await authApi.logout();
 
       // Finally set loading to false but keep initialized true
-      set({ loading: false, initialized: true });
+      set({ loading: false, initialized: true, user: null });
 
       // Force a hard reload to clear any cached state
       if (typeof window !== "undefined") {

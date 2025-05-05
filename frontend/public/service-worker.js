@@ -105,35 +105,45 @@ self.addEventListener("sync", (event) => {
 // Function to sync pending tasks
 async function syncTasks() {
   try {
-    const pendingTasksRequests = await getDBData("pendingTasks");
+    // Check if the object store exists before trying to access it
+    try {
+      const pendingTasksRequests = await getDBData("pendingTasks");
 
-    await Promise.all(
-      pendingTasksRequests.map(async (request) => {
-        try {
-          const { url, method, body, id } = request;
-          const response = await fetch(url, {
-            method,
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          });
+      if (pendingTasksRequests.length === 0) {
+        console.log("No pending tasks to sync");
+        return;
+      }
 
-          if (response.ok) {
-            // If successful, remove from pending queue
-            await removeDBData("pendingTasks", id);
+      await Promise.all(
+        pendingTasksRequests.map(async (request) => {
+          try {
+            const { url, method, body, id } = request;
+            const response = await fetch(url, {
+              method,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            });
+
+            if (response.ok) {
+              // If successful, remove from pending queue
+              await removeDBData("pendingTasks", id);
+            }
+          } catch (error) {
+            console.error("Error syncing task:", error);
           }
-        } catch (error) {
-          console.error("Error syncing task:", error);
-        }
-      })
-    );
+        })
+      );
 
-    // Notify clients that sync is complete
-    const clients = await self.clients.matchAll();
-    clients.forEach((client) => {
-      client.postMessage({ type: "SYNC_COMPLETE", category: "tasks" });
-    });
+      // Notify clients that sync is complete
+      const clients = await self.clients.matchAll();
+      clients.forEach((client) => {
+        client.postMessage({ type: "SYNC_COMPLETE", category: "tasks" });
+      });
+    } catch (error) {
+      console.error("Error with pendingTasks store:", error);
+    }
   } catch (error) {
     console.error("Error during task sync:", error);
   }
@@ -142,35 +152,48 @@ async function syncTasks() {
 // Function to sync notifications actions
 async function syncNotifications() {
   try {
-    const pendingNotifications = await getDBData("pendingNotifications");
+    // Check if the object store exists before trying to access it
+    try {
+      const pendingNotifications = await getDBData("pendingNotifications");
 
-    await Promise.all(
-      pendingNotifications.map(async (notification) => {
-        try {
-          const { url, method, body, id } = notification;
-          const response = await fetch(url, {
-            method,
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          });
+      if (pendingNotifications.length === 0) {
+        console.log("No pending notifications to sync");
+        return;
+      }
 
-          if (response.ok) {
-            // If successful, remove from pending queue
-            await removeDBData("pendingNotifications", id);
+      await Promise.all(
+        pendingNotifications.map(async (notification) => {
+          try {
+            const { url, method, body, id } = notification;
+            const response = await fetch(url, {
+              method,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(body),
+            });
+
+            if (response.ok) {
+              // If successful, remove from pending queue
+              await removeDBData("pendingNotifications", id);
+            }
+          } catch (error) {
+            console.error("Error syncing notification:", error);
           }
-        } catch (error) {
-          console.error("Error syncing notification:", error);
-        }
-      })
-    );
+        })
+      );
 
-    // Notify clients that sync is complete
-    const clients = await self.clients.matchAll();
-    clients.forEach((client) => {
-      client.postMessage({ type: "SYNC_COMPLETE", category: "notifications" });
-    });
+      // Notify clients that sync is complete
+      const clients = await self.clients.matchAll();
+      clients.forEach((client) => {
+        client.postMessage({
+          type: "SYNC_COMPLETE",
+          category: "notifications",
+        });
+      });
+    } catch (error) {
+      console.error("Error with pendingNotifications store:", error);
+    }
   } catch (error) {
     console.error("Error during notification sync:", error);
   }
@@ -179,53 +202,128 @@ async function syncNotifications() {
 // IndexedDB helper functions
 function getDBData(storeName) {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("taskManagementOfflineDB", 1);
+    try {
+      const request = indexedDB.open("taskManagementOfflineDB", 1);
 
-    request.onerror = (event) =>
-      reject("IndexedDB error: " + event.target.errorCode);
+      request.onerror = (event) => {
+        console.error("IndexedDB error:", event.target.error);
+        // Return empty array instead of rejecting
+        resolve([]);
+      };
 
-    request.onsuccess = (event) => {
-      const db = event.target.result;
+      request.onupgradeneeded = (event) => {
+        console.log("IndexedDB upgrade needed");
+        // If the database is being created/upgraded now, it doesn't have our data
+        // We'll resolve with an empty array
+        resolve([]);
+      };
 
-      // Check if the object store exists
-      if (!db.objectStoreNames.contains(storeName)) {
-        console.warn(`Object store ${storeName} does not exist`);
-        return resolve([]);
-      }
+      request.onsuccess = (event) => {
+        try {
+          const db = event.target.result;
 
-      const transaction = db.transaction(storeName, "readonly");
-      const store = transaction.objectStore(storeName);
-      const getAllRequest = store.getAll();
+          // Check if the object store exists
+          if (!db.objectStoreNames.contains(storeName)) {
+            console.warn(`Object store ${storeName} does not exist`);
+            db.close();
+            return resolve([]);
+          }
 
-      getAllRequest.onsuccess = () => resolve(getAllRequest.result);
-      getAllRequest.onerror = () => reject("Error getting data from IndexedDB");
-    };
+          try {
+            const transaction = db.transaction(storeName, "readonly");
+            const store = transaction.objectStore(storeName);
+
+            transaction.onerror = (e) => {
+              console.error("Transaction error:", e.target.error);
+              db.close();
+              resolve([]);
+            };
+
+            const getAllRequest = store.getAll();
+
+            getAllRequest.onsuccess = () => {
+              db.close();
+              resolve(getAllRequest.result);
+            };
+
+            getAllRequest.onerror = (e) => {
+              console.error("Error getting data:", e.target.error);
+              db.close();
+              resolve([]);
+            };
+          } catch (transactionError) {
+            console.error("Error creating transaction:", transactionError);
+            db.close();
+            resolve([]);
+          }
+        } catch (dbError) {
+          console.error("Error with database:", dbError);
+          resolve([]);
+        }
+      };
+    } catch (outerError) {
+      console.error("Outer error with IndexedDB:", outerError);
+      resolve([]);
+    }
   });
 }
 
 function removeDBData(storeName, id) {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("taskManagementOfflineDB", 1);
+  return new Promise((resolve) => {
+    try {
+      const request = indexedDB.open("taskManagementOfflineDB", 1);
 
-    request.onerror = (event) =>
-      reject("IndexedDB error: " + event.target.errorCode);
+      request.onerror = (event) => {
+        console.error("IndexedDB error:", event.target.error);
+        resolve();
+      };
 
-    request.onsuccess = (event) => {
-      const db = event.target.result;
+      request.onsuccess = (event) => {
+        try {
+          const db = event.target.result;
 
-      // Check if the object store exists
-      if (!db.objectStoreNames.contains(storeName)) {
-        console.warn(`Object store ${storeName} does not exist`);
-        return resolve();
-      }
+          // Check if the object store exists
+          if (!db.objectStoreNames.contains(storeName)) {
+            console.warn(`Object store ${storeName} does not exist`);
+            db.close();
+            return resolve();
+          }
 
-      const transaction = db.transaction(storeName, "readwrite");
-      const store = transaction.objectStore(storeName);
-      const deleteRequest = store.delete(id);
+          try {
+            const transaction = db.transaction(storeName, "readwrite");
+            const store = transaction.objectStore(storeName);
 
-      deleteRequest.onsuccess = () => resolve();
-      deleteRequest.onerror = () =>
-        reject("Error deleting data from IndexedDB");
-    };
+            transaction.onerror = (e) => {
+              console.error("Transaction error:", e.target.error);
+              db.close();
+              resolve();
+            };
+
+            const deleteRequest = store.delete(id);
+
+            deleteRequest.onsuccess = () => {
+              db.close();
+              resolve();
+            };
+
+            deleteRequest.onerror = (e) => {
+              console.error("Error deleting data:", e.target.error);
+              db.close();
+              resolve();
+            };
+          } catch (transactionError) {
+            console.error("Error creating transaction:", transactionError);
+            db.close();
+            resolve();
+          }
+        } catch (dbError) {
+          console.error("Error with database:", dbError);
+          resolve();
+        }
+      };
+    } catch (outerError) {
+      console.error("Outer error with IndexedDB:", outerError);
+      resolve();
+    }
   });
 }
