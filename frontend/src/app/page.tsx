@@ -1,15 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import useAuthStore from "@/stores/authStore";
+import { isLoggedOut } from "@/utils/logoutHelper";
 
 export default function Home() {
   const { user, initialized } = useAuthStore();
 
-  // If auth state isn't initialized yet, don't render anything auth-dependent
-  const isAuthenticated = initialized && user;
+  // More restrictive authentication check
+  const isAuthenticated = initialized && user && !isLoggedOut();
+
+  // Re-check authentication on component mount
+  useEffect(() => {
+    // If we see logout flags, make sure the UI reflects that
+    if (isLoggedOut()) {
+      useAuthStore.getState().initialize();
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">

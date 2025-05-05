@@ -14,10 +14,15 @@ export const forceLogout = async () => {
     // Clear sessionStorage
     sessionStorage.clear();
 
-    // Add a strong logout signal
+    // Add a strong logout signal - do this AFTER clearing storage
     sessionStorage.setItem("FORCE_LOGOUT", "true");
     localStorage.setItem("FORCE_LOGOUT", "true");
     localStorage.setItem("logged_out", "true");
+
+    // Add timestamp to logout signal to prevent stale checks
+    const logoutTimestamp = Date.now().toString();
+    localStorage.setItem("logout_timestamp", logoutTimestamp);
+    sessionStorage.setItem("logout_timestamp", logoutTimestamp);
 
     // Remove all cookies
     document.cookie.split(";").forEach(function (c) {
@@ -64,8 +69,19 @@ export const forceLogout = async () => {
     console.error("Error disconnecting sockets:", error);
   }
 
-  // 3. For extra certainty, add a logout flag
-  localStorage.setItem("logged_out", "true");
+  // 3. For extra certainty, set logout flags again after all operations
+  try {
+    // Set multiple flags to ensure at least one persists
+    localStorage.setItem("logged_out", "true");
+    localStorage.setItem("FORCE_LOGOUT", "true");
+    sessionStorage.setItem("FORCE_LOGOUT", "true");
+
+    // Remove auth token explicitly
+    localStorage.removeItem("authToken");
+    sessionStorage.removeItem("authToken");
+  } catch (e) {
+    console.error("Error setting final logout flags:", e);
+  }
 
   // 4. Force reload and redirect to login page
   console.log("Redirecting to login page...");
@@ -98,11 +114,15 @@ export const hardReload = (path: string = window.location.pathname) => {
 
 // Function to check if user is forcibly logged out
 export const isLoggedOut = () => {
-  return (
+  const hasLogoutFlag =
     localStorage.getItem("logged_out") === "true" ||
     localStorage.getItem("FORCE_LOGOUT") === "true" ||
-    sessionStorage.getItem("FORCE_LOGOUT") === "true"
-  );
+    sessionStorage.getItem("FORCE_LOGOUT") === "true";
+
+  // Also check for auth token absence as an indicator of logout
+  const hasNoAuthToken = !localStorage.getItem("authToken");
+
+  return hasLogoutFlag || hasNoAuthToken;
 };
 
 // Function to clear the logged out flag (call when login successful)
@@ -110,4 +130,6 @@ export const clearLogoutFlag = () => {
   localStorage.removeItem("logged_out");
   localStorage.removeItem("FORCE_LOGOUT");
   sessionStorage.removeItem("FORCE_LOGOUT");
+  localStorage.removeItem("logout_timestamp");
+  sessionStorage.removeItem("logout_timestamp");
 };

@@ -120,6 +120,15 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
       // Use the dedicated logout utility for a complete reset
       forceLogout();
+
+      // Ensure auth state remains cleared even after redirect
+      setTimeout(() => {
+        set({
+          user: null,
+          initialized: true,
+          loading: false,
+        });
+      }, 100);
     } catch (error: unknown) {
       // Handle errors but still try to clear state
       const apiError = error as ApiError;
@@ -135,6 +144,15 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
       // Use force logout even if the API call fails
       forceLogout();
+
+      // Ensure auth state remains cleared even after redirect
+      setTimeout(() => {
+        set({
+          user: null,
+          initialized: true,
+          loading: false,
+        });
+      }, 100);
     }
   },
 
@@ -154,21 +172,21 @@ const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   initialize: async () => {
+    // Always check for logout flags first
+    if (isLoggedOut()) {
+      console.log(
+        "Found logout flag during initialization - staying logged out"
+      );
+      // User is logged out, make sure auth state reflects this
+      localStorage.removeItem("authToken");
+      set({ user: null, loading: false, initialized: true });
+      return;
+    }
+
     if (get().initialized) return;
 
     try {
       set({ loading: true, error: null });
-
-      // Check if user is logged out first using our helper
-      if (isLoggedOut()) {
-        console.log(
-          "Found logout flag during initialization - staying logged out"
-        );
-        // User is logged out, make sure auth state reflects this
-        localStorage.removeItem("authToken");
-        set({ user: null, loading: false, initialized: true });
-        return;
-      }
 
       // Check if there's a token in localStorage
       const token =
