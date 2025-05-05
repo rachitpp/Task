@@ -22,6 +22,49 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const { addNotification } = useNotificationStore();
   const [socket, setSocket] = React.useState<Socket | null>(null);
 
+  // Reference to track if component is mounted
+  const isMounted = React.useRef(true);
+
+  // Element ID for socket disconnect events
+  const socketManagerId = "socket-connection-manager";
+
+  // Force disconnect handler
+  const handleForceDisconnect = React.useCallback(() => {
+    if (socket) {
+      console.log("Force disconnecting socket...");
+      socket.disconnect();
+      setSocket(null);
+    }
+  }, [socket]);
+
+  // Set up logout event listener
+  React.useEffect(() => {
+    // Create socket manager element if it doesn't exist
+    let socketManagerElement = document.getElementById(socketManagerId);
+    if (!socketManagerElement) {
+      socketManagerElement = document.createElement("div");
+      socketManagerElement.id = socketManagerId;
+      socketManagerElement.style.display = "none";
+      document.body.appendChild(socketManagerElement);
+    }
+
+    // Add event listener
+    socketManagerElement.addEventListener(
+      "force-disconnect",
+      handleForceDisconnect
+    );
+
+    // Cleanup on unmount
+    return () => {
+      socketManagerElement?.removeEventListener(
+        "force-disconnect",
+        handleForceDisconnect
+      );
+      isMounted.current = false;
+    };
+  }, [handleForceDisconnect]);
+
+  // Main socket connection effect
   useEffect(() => {
     // Clean up previous socket if it exists
     if (socket) {
@@ -50,59 +93,90 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       },
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      timeout: 20000,
+      reconnection: true,
+      forceNew: true,
+      autoConnect: true,
+      upgrade: true,
+      rememberUpgrade: true,
     });
 
-    // Set socket in state
-    setSocket(newSocket);
-
-    // Authenticate socket with user ID
-    newSocket.on("connect", () => {
-      console.log("Socket connected");
-      // Authenticate socket connection with user ID
-      newSocket.emit("authenticate", user._id);
+    // Log connection events for debugging
+    newSocket.on("connect_error", (err) => {
+      console.warn("Socket connection error:", err.message);
     });
 
-    // Handle notifications
-    newSocket.on("notification", (data) => {
-      console.log("Received notification:", data);
-      if (data.type === "new") {
-        // Add notification to store
-        addNotification(data.data);
+    newSocket.io.on("reconnect_attempt", (attempt) => {
+      console.log(`Socket reconnection attempt ${attempt}`);
+    });
 
-        // Show browser notification if supported
-        if (Notification.permission === "granted") {
-          new Notification(data.data.title, {
-            body: data.data.message,
-            icon: "/favicon.ico",
-          });
-        }
-        // Request permission if not granted
-        else if (Notification.permission !== "denied") {
-          Notification.requestPermission().then((permission) => {
-            if (permission === "granted") {
-              new Notification(data.data.title, {
-                body: data.data.message,
-                icon: "/favicon.ico",
-              });
-            }
-          });
-        }
+    newSocket.io.on("reconnect", (attempt) => {
+      console.log(`Socket reconnected after ${attempt} attempts`);
+      // Re-authenticate on reconnection
+      if (user) {
+        newSocket.emit("authenticate", user._id);
       }
     });
 
-    // Handle disconnect
-    newSocket.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
+    // Set socket in state
+    if (isMounted.current) {
+      setSocket(newSocket);
+    }
 
-    // Handle errors
-    newSocket.on("error", (error) => {
-      console.error("Socket error:", error);
-    });
+    // Set up socket connection
+    if (newSocket) {
+      // Authenticate socket with user ID
+      newSocket.on("connect", () => {
+        console.log("Socket connected");
+        // Authenticate socket connection with user ID
+        newSocket.emit("authenticate", user._id);
+      });
 
-    // Clean up on unmount
+      // Handle notifications
+      newSocket.on("notification", (data) => {
+        console.log("Received notification:", data);
+        if (data.type === "new") {
+          // Add notification to store
+          addNotification(data.data);
+
+          // Show browser notification if supported
+          if (Notification && Notification.permission === "granted") {
+            new Notification(data.data.title, {
+              body: data.data.message,
+              icon: "/favicon.ico",
+            });
+          }
+          // Request permission if not granted
+          else if (Notification && Notification.permission !== "denied") {
+            Notification.requestPermission().then((permission) => {
+              if (permission === "granted") {
+                new Notification(data.data.title, {
+                  body: data.data.message,
+                  icon: "/favicon.ico",
+                });
+              }
+            });
+          }
+        }
+      });
+
+      // Handle disconnect
+      newSocket.on("disconnect", () => {
+        console.log("Socket disconnected");
+      });
+
+      // Handle errors
+      newSocket.on("error", (error) => {
+        console.error("Socket error:", error);
+      });
+    }
+
+    // Clean up on unmount or when dependencies change
     return () => {
-      newSocket.disconnect();
+      if (newSocket) {
+        console.log("Cleaning up socket connection");
+        newSocket.disconnect();
+      }
     };
   }, [user, initialized, addNotification]);
 

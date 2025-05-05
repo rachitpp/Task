@@ -45,9 +45,17 @@ const io = socketio(server, {
         callback(null, true); // Allow all origins temporarily to debug
       }
     },
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
+    allowedHeaders: ["content-type", "authorization"],
   },
+  // Increase timeouts and configure transport
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  transports: ["websocket", "polling"],
+  allowUpgrades: true,
+  upgradeTimeout: 10000,
+  cookie: false,
 });
 
 // Store active user connections

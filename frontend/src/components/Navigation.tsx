@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useAuthStore from "@/stores/authStore";
 import RoleGuard from "./RoleGuard";
+import { forceLogout } from "@/utils/logoutHelper";
 
 const Navigation: React.FC = () => {
   const { user, logout, initialized } = useAuthStore();
@@ -22,15 +23,19 @@ const Navigation: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      // First close the menu
       closeMenu();
-      // Force a hard reload and redirect
-      window.location.href = "/login";
+
+      // Then call the normal logout
+      await logout();
+
+      // Then use our force logout for a complete reset
+      forceLogout();
     } catch (error) {
-      // Handle any errors if needed
       console.error("Logout failed:", error);
-      // Still redirect even if the API call fails
-      window.location.href = "/login";
+
+      // Still force logout even if API call fails
+      forceLogout();
     }
   };
 
@@ -215,6 +220,13 @@ const Navigation: React.FC = () => {
           >
             Sign out
           </button>
+
+          {/* Direct link to logout page as a fallback */}
+          <div className="hidden">
+            <Link href="/logout" className="text-sm text-gray-600">
+              Logout page
+            </Link>
+          </div>
         </div>
       )}
     </div>

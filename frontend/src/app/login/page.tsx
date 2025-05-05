@@ -6,6 +6,7 @@ import Link from "next/link";
 import useAuthStore from "@/stores/authStore";
 import { AxiosError } from "axios";
 import { motion } from "framer-motion";
+import { clearLogoutFlag } from "@/utils/logoutHelper";
 
 // Define error type
 type ApiError = AxiosError<{
@@ -23,6 +24,8 @@ const LoginPage = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
+      // Clear any logout flag
+      clearLogoutFlag();
       router.push("/dashboard");
     }
   }, [user, router]);
@@ -43,6 +46,10 @@ const LoginPage = () => {
 
     try {
       await login(email, password);
+
+      // Clear any logout flag after successful login
+      clearLogoutFlag();
+
       // Wait for a moment to ensure cookie is set
       setTimeout(() => {
         router.push("/dashboard");

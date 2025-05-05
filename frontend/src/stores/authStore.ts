@@ -82,12 +82,24 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     try {
-      // Clear all authentication data from storage
+      // Signal logout in multiple ways
       if (typeof window !== "undefined") {
-        // Clear token and all local/session storage
+        // Signal logout with multiple flags
         localStorage.removeItem("authToken");
         localStorage.clear();
+        localStorage.setItem("logged_out", "true");
         sessionStorage.clear();
+        sessionStorage.setItem("logged_out", "true");
+
+        // Also try to clear all cookies
+        document.cookie.split(";").forEach(function (c) {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(
+              /=.*/,
+              "=;expires=" + new Date().toUTCString() + ";path=/"
+            );
+        });
 
         // Also try to clear the IndexedDB if possible
         try {
@@ -101,33 +113,53 @@ const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       // First set loading and clear user state
-      set({ loading: true, error: null, user: null });
+      set({
+        loading: true,
+        error: null,
+        user: null,
+        initialized: true,
+      });
 
-      // Then make the API call
-      await authApi.logout();
+      // Try to call the API logout endpoint
+      try {
+        await authApi.logout();
+      } catch (apiError) {
+        console.error("API logout error:", apiError);
+        // Just log the error but continue with client-side logout
+      }
 
-      // Finally set loading to false but keep initialized true
-      set({ loading: false, initialized: true, user: null });
+      // Finally confirm user is set to null
+      set({
+        loading: false,
+        initialized: true,
+        user: null,
+      });
 
-      // Force a hard reload to clear any cached state
+      // Force a hard reload to clear any cached state - using a small delay
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 100);
       }
     } catch (error: unknown) {
+      // Handle errors but still try to clear state
       const apiError = error as ApiError;
+      console.error("Logout error:", apiError);
+
+      // Still set user to null even if API call fails
       set({
         loading: false,
         error: apiError.response?.data?.message || "Failed to logout",
-        user: null, // Still clear the user even if API call fails
+        user: null,
         initialized: true,
       });
 
       // Even if API call fails, we should redirect to login
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 100);
       }
-
-      throw error;
     }
   },
 

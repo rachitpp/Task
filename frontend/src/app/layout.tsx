@@ -32,6 +32,7 @@ export default function RootLayout({
         <meta name="msapplication-tap-highlight" content="no" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <link rel="shortcut icon" href="/favicon.ico" />
+        <script src="/engine.io.js" defer></script>
       </head>
       <body className={`${inter.className} text-black`}>
         <Providers>
