@@ -3,28 +3,36 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/authStore";
-import { forceLogout } from "@/utils/logoutHelper";
 
 export default function LogoutPage() {
   const router = useRouter();
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
 
   useEffect(() => {
     const performLogout = async () => {
       try {
-        // First try normal logout to notify the server
+        // Use the logout method from the auth store - it now handles everything
         await logout();
+
+        // We should never reach here if logout works correctly (it should redirect)
+        // but just in case, add a fallback redirect
+        router.push("/login");
       } catch (error) {
-        console.error("API logout failed:", error);
-      } finally {
-        // Always execute force logout regardless of API success
-        forceLogout();
+        console.error("Logout failed:", error);
+
+        // Redirect to login even if logout fails
+        router.push("/login");
       }
     };
 
-    // Execute logout immediately
-    performLogout();
-  }, [logout]);
+    // Only perform logout if user is actually logged in
+    if (user) {
+      performLogout();
+    } else {
+      // If no user is logged in, redirect to login
+      router.push("/login");
+    }
+  }, [logout, router, user]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">

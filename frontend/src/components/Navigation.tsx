@@ -5,12 +5,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useAuthStore from "@/stores/authStore";
 import RoleGuard from "./RoleGuard";
-import { forceLogout } from "@/utils/logoutHelper";
 
 const Navigation: React.FC = () => {
   const { user, logout, initialized } = useAuthStore();
   const pathname = usePathname();
-  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -26,21 +24,22 @@ const Navigation: React.FC = () => {
       // First close the menu
       closeMenu();
 
-      // Call the API logout and then force client-side logout
+      // Call the store's logout method - it now handles everything
       await logout();
-
-      // Use force logout for a complete reset of all client state
-      forceLogout();
     } catch (error) {
       console.error("Logout failed:", error);
-      // Still force logout even if API call fails
-      forceLogout();
+      // The store will still handle force logout even if there's an error
     }
   };
 
   const isActive = (path: string) => {
     return pathname === path;
   };
+
+  // Wait for auth to be initialized before rendering
+  if (!initialized) {
+    return null; // Don't render anything while checking auth
+  }
 
   // Handle non-authenticated users
   if (!user) {
@@ -213,17 +212,13 @@ const Navigation: React.FC = () => {
 
           <hr className="my-1 border-gray-100" />
 
-          {/* Use a direct link instead of a button for more reliable logout */}
-          <Link
-            href="/logout"
-            onClick={(e) => {
-              e.preventDefault(); // Prevent navigation
-              handleLogout(); // Use our handler instead
-            }}
+          {/* Use a button for reliable logout without navigation */}
+          <button
+            onClick={handleLogout}
             className="block w-full text-left px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100"
           >
             Sign out
-          </Link>
+          </button>
         </div>
       )}
     </div>

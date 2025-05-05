@@ -22,6 +22,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const { addNotification } = useNotificationStore();
   const [socket, setSocket] = React.useState<Socket | null>(null);
   const [connectionAttempts, setConnectionAttempts] = React.useState(0);
+  const [socketEnabled, setSocketEnabled] = React.useState(true);
   const maxRetries = 5;
 
   // Reference to track if component is mounted
@@ -68,6 +69,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
   // Main socket connection effect
   useEffect(() => {
+    // Skip if sockets are disabled due to repeated failures
+    if (!socketEnabled) {
+      console.log("Socket connections disabled due to repeated failures");
+      return;
+    }
+
     // Clean up previous socket if it exists
     if (socket) {
       socket.disconnect();
@@ -80,8 +87,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     }
 
     // Initialize socket connection
-    const SOCKET_URL =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    let SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+    // Remove "/api" from the URL to avoid namespace errors
+    SOCKET_URL = SOCKET_URL.replace(/\/api\/?$/, "");
 
     // Get auth token from localStorage
     const token =
@@ -115,6 +124,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
         if (connectionAttempts >= maxRetries) {
           console.error("Maximum socket connection attempts reached.");
+          // Disable socket connections after too many failures
+          setSocketEnabled(false);
           // Don't keep trying forever - disconnect after max retries
           newSocket.disconnect();
         }
@@ -136,6 +147,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
       newSocket.io.on("reconnect_failed", () => {
         console.error("Socket reconnection failed after all attempts");
+        // Disable socket connections after too many failures
+        setSocketEnabled(false);
       });
 
       newSocket.io.on("error", (error) => {
@@ -153,6 +166,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         newSocket.on("connect", () => {
           console.log("Socket connected successfully");
           setConnectionAttempts(0); // Reset counter on successful connection
+          setSocketEnabled(true); // Re-enable sockets on successful connection
 
           // Authenticate socket connection with user ID
           newSocket.emit("authenticate", user._id);
@@ -211,9 +225,24 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
       };
     } catch (error) {
       console.error("Error creating socket connection:", error);
+      // Disable sockets after a critical error
+      setSocketEnabled(false);
       return () => {}; // Return empty cleanup function
     }
-  }, [user, initialized, addNotification, connectionAttempts]);
+  }, [user, initialized, addNotification, connectionAttempts, socketEnabled]);
+
+  // Effect to re-enable sockets after a timeout
+  useEffect(() => {
+    if (!socketEnabled) {
+      const timer = setTimeout(() => {
+        console.log("Re-enabling socket connections after timeout");
+        setSocketEnabled(true);
+        setConnectionAttempts(0);
+      }, 60000); // Try again after 1 minute
+
+      return () => clearTimeout(timer);
+    }
+  }, [socketEnabled]);
 
   return (
     <SocketContext.Provider value={{ socket }}>
