@@ -7,7 +7,7 @@ import useAuthStore from "@/stores/authStore";
 import RoleGuard from "./RoleGuard";
 
 const Navigation: React.FC = () => {
-  const { user, logout } = useAuthStore();
+  const { user, logout, initialized } = useAuthStore();
   const pathname = usePathname();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);

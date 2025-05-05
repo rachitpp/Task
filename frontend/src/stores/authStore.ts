@@ -82,25 +82,39 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
   logout: async () => {
     try {
-      // First set loading and clear user state
-      set({ loading: true, error: null, user: null });
-
       // Also clear token from localStorage
       if (typeof window !== "undefined") {
         localStorage.removeItem("authToken");
+        sessionStorage.clear(); // Clear any session data
       }
+
+      // First set loading and clear user state
+      set({ loading: true, error: null, user: null });
 
       // Then make the API call
       await authApi.logout();
 
       // Finally set loading to false but keep initialized true
-      set({ loading: false });
+      set({ loading: false, initialized: true });
+
+      // Force a hard reload to clear any cached state
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
     } catch (error: unknown) {
       const apiError = error as ApiError;
       set({
         loading: false,
         error: apiError.response?.data?.message || "Failed to logout",
+        user: null, // Still clear the user even if API call fails
+        initialized: true,
       });
+
+      // Even if API call fails, we should redirect to login
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+
       throw error;
     }
   },

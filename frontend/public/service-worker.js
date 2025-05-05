@@ -186,6 +186,13 @@ function getDBData(storeName) {
 
     request.onsuccess = (event) => {
       const db = event.target.result;
+
+      // Check if the object store exists
+      if (!db.objectStoreNames.contains(storeName)) {
+        console.warn(`Object store ${storeName} does not exist`);
+        return resolve([]);
+      }
+
       const transaction = db.transaction(storeName, "readonly");
       const store = transaction.objectStore(storeName);
       const getAllRequest = store.getAll();
@@ -205,6 +212,13 @@ function removeDBData(storeName, id) {
 
     request.onsuccess = (event) => {
       const db = event.target.result;
+
+      // Check if the object store exists
+      if (!db.objectStoreNames.contains(storeName)) {
+        console.warn(`Object store ${storeName} does not exist`);
+        return resolve();
+      }
+
       const transaction = db.transaction(storeName, "readwrite");
       const store = transaction.objectStore(storeName);
       const deleteRequest = store.delete(id);
