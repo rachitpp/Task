@@ -8,43 +8,6 @@ import { isLoggedOut } from "@/utils/logoutHelper";
 
 export default function Home() {
   const { user, initialized } = useAuthStore();
-  const [showLoginButtons, setShowLoginButtons] = useState(true);
-  const [isFirstRender, setIsFirstRender] = useState(true);
-
-  // Use a hard-coded delay before checking auth status
-  useEffect(() => {
-    // Immediately show login buttons on first render
-    if (isFirstRender) {
-      setShowLoginButtons(true);
-      setIsFirstRender(false);
-      return;
-    }
-
-    // Check if there's a recent logout
-    if (localStorage.getItem("logout_timestamp")) {
-      const logoutTime = parseInt(
-        localStorage.getItem("logout_timestamp") || "0"
-      );
-      const timeSinceLogout = Date.now() - logoutTime;
-
-      // If logout happened in the last 2 minutes, always show login buttons
-      if (timeSinceLogout < 120000) {
-        setShowLoginButtons(true);
-        return;
-      }
-    }
-
-    // Add a small delay to ensure all auth checks complete
-    const timer = setTimeout(() => {
-      if (isLoggedOut() || !user) {
-        setShowLoginButtons(true);
-      } else {
-        setShowLoginButtons(!user ? true : false);
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [user, initialized, isFirstRender]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -55,30 +18,21 @@ export default function Home() {
             <span className="text-blue-600">Task</span> Management
           </h1>
           <nav className="flex gap-4">
-            {/* Always prefer showing login buttons if in doubt */}
-            {!showLoginButtons && user ? (
+            {/* Always show login/register buttons */}
+            <div className="flex items-center gap-6">
               <Link
-                href="/dashboard"
+                href="/login"
+                className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm font-medium"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
                 className="px-5 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 text-sm font-medium shadow-sm"
               >
-                Go to Dashboard
+                Register
               </Link>
-            ) : (
-              <div className="flex items-center gap-6">
-                <Link
-                  href="/login"
-                  className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-sm font-medium"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  className="px-5 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 text-sm font-medium shadow-sm"
-                >
-                  Register
-                </Link>
-              </div>
-            )}
+            </div>
           </nav>
         </div>
       </header>
@@ -304,14 +258,12 @@ export default function Home() {
                 >
                   Try for Free
                 </Link>
-                {showLoginButtons && (
-                  <Link
-                    href="/login"
-                    className="px-6 py-3 border border-blue-200 text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-300 text-center text-sm font-medium"
-                  >
-                    Sign In
-                  </Link>
-                )}
+                <Link
+                  href="/login"
+                  className="px-6 py-3 border border-blue-200 text-blue-600 rounded-full hover:bg-blue-50 transition-all duration-300 text-center text-sm font-medium"
+                >
+                  Sign In
+                </Link>
               </div>
             </div>
           </motion.div>
