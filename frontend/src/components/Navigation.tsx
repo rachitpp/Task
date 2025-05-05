@@ -214,19 +214,13 @@ const Navigation: React.FC = () => {
 
           <hr className="my-1 border-gray-100" />
 
-          <button
-            onClick={handleLogout}
+          {/* Use a direct link instead of a button for more reliable logout */}
+          <Link
+            href="/logout"
             className="block w-full text-left px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100"
           >
             Sign out
-          </button>
-
-          {/* Direct link to logout page as a fallback */}
-          <div className="hidden">
-            <Link href="/logout" className="text-sm text-gray-600">
-              Logout page
-            </Link>
-          </div>
+          </Link>
         </div>
       )}
     </div>

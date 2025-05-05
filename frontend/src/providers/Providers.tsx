@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { SocketProvider } from "@/providers/SocketProviders";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import useAuthStore from "@/stores/authStore";
+import LogoutStateGuard from "@/components/LogoutStateGuard";
 
 /**
  * Providers component - Wraps all global providers to avoid nesting hell
@@ -17,9 +18,11 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
   }, [initialize]);
 
   return (
-    <SocketProvider>
-      {children}
-      <ServiceWorkerRegistration />
-    </SocketProvider>
+    <LogoutStateGuard>
+      <SocketProvider>
+        {children}
+        <ServiceWorkerRegistration />
+      </SocketProvider>
+    </LogoutStateGuard>
   );
 };

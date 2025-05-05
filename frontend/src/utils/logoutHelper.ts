@@ -14,6 +14,11 @@ export const forceLogout = async () => {
     // Clear sessionStorage
     sessionStorage.clear();
 
+    // Add a strong logout signal
+    sessionStorage.setItem("FORCE_LOGOUT", "true");
+    localStorage.setItem("FORCE_LOGOUT", "true");
+    localStorage.setItem("logged_out", "true");
+
     // Remove all cookies
     document.cookie.split(";").forEach(function (c) {
       document.cookie = c
@@ -31,6 +36,19 @@ export const forceLogout = async () => {
       dbDeleteRequest.onerror = () => console.error("Error deleting IndexedDB");
     } catch (e) {
       console.error("Error accessing IndexedDB:", e);
+    }
+
+    // Clear cache API if available
+    try {
+      if ("caches" in window) {
+        caches.keys().then((names) => {
+          names.forEach((name) => {
+            caches.delete(name);
+          });
+        });
+      }
+    } catch (e) {
+      console.error("Error clearing cache:", e);
     }
   } catch (error) {
     console.error("Error clearing browser storage:", error);
@@ -52,18 +70,44 @@ export const forceLogout = async () => {
   // 4. Force reload and redirect to login page
   console.log("Redirecting to login page...");
 
-  // Small delay to allow storage clearing to complete
-  setTimeout(() => {
-    window.location.href = "/login";
-  }, 100);
+  // Use a more aggressive reload approach
+  try {
+    // Force a full page reload with cache clearing
+    window.location.href = "/login?t=" + new Date().getTime();
+  } catch (e) {
+    console.error("Error during redirect:", e);
+    // Fallback
+    window.location.replace("/login");
+  }
+};
+
+// Hard reload the page to clear any React component state
+export const hardReload = (path: string = window.location.pathname) => {
+  // Add cache-busting parameter
+  const url =
+    path + (path.includes("?") ? "&" : "?") + "_=" + new Date().getTime();
+
+  try {
+    // Attempt to use location.replace for a clean reload
+    window.location.replace(url);
+  } catch (e) {
+    // Fallback to basic href
+    window.location.href = url;
+  }
 };
 
 // Function to check if user is forcibly logged out
 export const isLoggedOut = () => {
-  return localStorage.getItem("logged_out") === "true";
+  return (
+    localStorage.getItem("logged_out") === "true" ||
+    localStorage.getItem("FORCE_LOGOUT") === "true" ||
+    sessionStorage.getItem("FORCE_LOGOUT") === "true"
+  );
 };
 
 // Function to clear the logged out flag (call when login successful)
 export const clearLogoutFlag = () => {
   localStorage.removeItem("logged_out");
+  localStorage.removeItem("FORCE_LOGOUT");
+  sessionStorage.removeItem("FORCE_LOGOUT");
 };

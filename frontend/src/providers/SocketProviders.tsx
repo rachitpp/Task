@@ -85,9 +85,15 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const token =
       typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
-    const newSocket = io(SOCKET_URL, {
+    // Remove any trailing slashes from the URL to prevent namespace errors
+    const cleanSocketUrl = SOCKET_URL.replace(/\/$/, "");
+
+    console.log("Connecting to Socket.io server at:", cleanSocketUrl);
+
+    const newSocket = io(cleanSocketUrl, {
       withCredentials: true,
       transports: ["polling", "websocket"],
+      path: "/socket.io", // Explicit path
       auth: {
         token: token,
       },
