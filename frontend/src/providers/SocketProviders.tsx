@@ -21,6 +21,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   const { user, initialized } = useAuthStore();
   const { addNotification } = useNotificationStore();
   const [socket, setSocket] = React.useState<Socket | null>(null);
+  const [connectionAttempts, setConnectionAttempts] = React.useState(0);
+  const maxRetries = 5;
 
   // Reference to track if component is mounted
   const isMounted = React.useRef(true);
@@ -90,101 +92,128 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
     console.log("Connecting to Socket.io server at:", cleanSocketUrl);
 
-    const newSocket = io(cleanSocketUrl, {
-      withCredentials: true,
-      transports: ["polling", "websocket"],
-      path: "/socket.io", // Explicit path
-      auth: {
-        token: token,
-      },
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      timeout: 20000,
-      reconnection: true,
-      forceNew: true,
-      autoConnect: true,
-      upgrade: true,
-      rememberUpgrade: true,
-    });
-
-    // Log connection events for debugging
-    newSocket.on("connect_error", (err) => {
-      console.warn("Socket connection error:", err.message);
-    });
-
-    newSocket.io.on("reconnect_attempt", (attempt) => {
-      console.log(`Socket reconnection attempt ${attempt}`);
-    });
-
-    newSocket.io.on("reconnect", (attempt) => {
-      console.log(`Socket reconnected after ${attempt} attempts`);
-      // Re-authenticate on reconnection
-      if (user) {
-        newSocket.emit("authenticate", user._id);
-      }
-    });
-
-    // Set socket in state
-    if (isMounted.current) {
-      setSocket(newSocket);
-    }
-
-    // Set up socket connection
-    if (newSocket) {
-      // Authenticate socket with user ID
-      newSocket.on("connect", () => {
-        console.log("Socket connected");
-        // Authenticate socket connection with user ID
-        newSocket.emit("authenticate", user._id);
+    try {
+      const newSocket = io(cleanSocketUrl, {
+        withCredentials: true,
+        transports: ["polling", "websocket"],
+        path: "/socket.io", // Explicit path
+        auth: {
+          token: token,
+          userId: user._id, // Add user ID to auth object for authentication
+        },
+        timeout: 20000,
+        reconnection: true,
+        reconnectionAttempts: maxRetries,
+        reconnectionDelay: 1000,
+        autoConnect: true,
       });
 
-      // Handle notifications
-      newSocket.on("notification", (data) => {
-        console.log("Received notification:", data);
-        if (data.type === "new") {
-          // Add notification to store
-          addNotification(data.data);
+      // Log connection events for debugging
+      newSocket.on("connect_error", (err) => {
+        console.warn("Socket connection error:", err.message);
+        setConnectionAttempts((prev) => prev + 1);
 
-          // Show browser notification if supported
-          if (Notification && Notification.permission === "granted") {
-            new Notification(data.data.title, {
-              body: data.data.message,
-              icon: "/favicon.ico",
-            });
-          }
-          // Request permission if not granted
-          else if (Notification && Notification.permission !== "denied") {
-            Notification.requestPermission().then((permission) => {
-              if (permission === "granted") {
-                new Notification(data.data.title, {
-                  body: data.data.message,
-                  icon: "/favicon.ico",
-                });
-              }
-            });
-          }
+        if (connectionAttempts >= maxRetries) {
+          console.error("Maximum socket connection attempts reached.");
+          // Don't keep trying forever - disconnect after max retries
+          newSocket.disconnect();
         }
       });
 
-      // Handle disconnect
-      newSocket.on("disconnect", () => {
-        console.log("Socket disconnected");
+      newSocket.io.on("reconnect_attempt", (attempt) => {
+        console.log(`Socket reconnection attempt ${attempt}`);
       });
 
-      // Handle errors
-      newSocket.on("error", (error) => {
+      newSocket.io.on("reconnect", (attempt) => {
+        console.log(`Socket reconnected after ${attempt} attempts`);
+        setConnectionAttempts(0); // Reset counter on successful reconnection
+
+        // Re-authenticate on reconnection
+        if (user) {
+          newSocket.emit("authenticate", user._id);
+        }
+      });
+
+      newSocket.io.on("reconnect_failed", () => {
+        console.error("Socket reconnection failed after all attempts");
+      });
+
+      newSocket.io.on("error", (error) => {
         console.error("Socket error:", error);
       });
-    }
 
-    // Clean up on unmount or when dependencies change
-    return () => {
-      if (newSocket) {
-        console.log("Cleaning up socket connection");
-        newSocket.disconnect();
+      // Set socket in state
+      if (isMounted.current) {
+        setSocket(newSocket);
       }
-    };
-  }, [user, initialized, addNotification]);
+
+      // Set up socket connection
+      if (newSocket) {
+        // Authenticate socket with user ID
+        newSocket.on("connect", () => {
+          console.log("Socket connected successfully");
+          setConnectionAttempts(0); // Reset counter on successful connection
+
+          // Authenticate socket connection with user ID
+          newSocket.emit("authenticate", user._id);
+        });
+
+        // Handle notifications
+        newSocket.on("notification", (data) => {
+          console.log("Received notification:", data);
+          if (data.type === "new") {
+            // Add notification to store
+            addNotification(data.data);
+
+            // Show browser notification if supported
+            if (Notification && Notification.permission === "granted") {
+              new Notification(data.data.title, {
+                body: data.data.message,
+                icon: "/favicon.ico",
+              });
+            }
+            // Request permission if not granted
+            else if (Notification && Notification.permission !== "denied") {
+              Notification.requestPermission().then((permission) => {
+                if (permission === "granted") {
+                  new Notification(data.data.title, {
+                    body: data.data.message,
+                    icon: "/favicon.ico",
+                  });
+                }
+              });
+            }
+          }
+        });
+
+        // Handle disconnect
+        newSocket.on("disconnect", (reason) => {
+          console.log(`Socket disconnected: ${reason}`);
+
+          // If the server disconnected us, don't try to reconnect automatically
+          if (reason === "io server disconnect") {
+            // Manual reconnection needed
+            setTimeout(() => {
+              if (isMounted.current && user) {
+                newSocket.connect();
+              }
+            }, 3000);
+          }
+        });
+      }
+
+      // Clean up on unmount or when dependencies change
+      return () => {
+        if (newSocket) {
+          console.log("Cleaning up socket connection");
+          newSocket.disconnect();
+        }
+      };
+    } catch (error) {
+      console.error("Error creating socket connection:", error);
+      return () => {}; // Return empty cleanup function
+    }
+  }, [user, initialized, addNotification, connectionAttempts]);
 
   return (
     <SocketContext.Provider value={{ socket }}>

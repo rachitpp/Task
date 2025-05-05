@@ -26,14 +26,13 @@ const Navigation: React.FC = () => {
       // First close the menu
       closeMenu();
 
-      // Then call the normal logout
+      // Call the API logout and then force client-side logout
       await logout();
 
-      // Then use our force logout for a complete reset
+      // Use force logout for a complete reset of all client state
       forceLogout();
     } catch (error) {
       console.error("Logout failed:", error);
-
       // Still force logout even if API call fails
       forceLogout();
     }
@@ -217,6 +216,10 @@ const Navigation: React.FC = () => {
           {/* Use a direct link instead of a button for more reliable logout */}
           <Link
             href="/logout"
+            onClick={(e) => {
+              e.preventDefault(); // Prevent navigation
+              handleLogout(); // Use our handler instead
+            }}
             className="block w-full text-left px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100"
           >
             Sign out

@@ -11,6 +11,11 @@ const STATIC_CACHE_URLS = [
   "/manifest.json",
 ];
 
+// Database configuration
+const DB_NAME = "taskManagementOfflineDB";
+const DB_VERSION = 1;
+const STORES = ["pendingTasks", "pendingNotifications"];
+
 // Installation of service worker
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -21,8 +26,41 @@ self.addEventListener("install", (event) => {
         return cache.addAll(STATIC_CACHE_URLS);
       })
       .then(() => self.skipWaiting()) // Activate SW immediately
+      .then(() => {
+        // Ensure DB is initialized with proper object stores
+        return initializeDatabase();
+      })
   );
 });
+
+// Initialize IndexedDB with required object stores
+function initializeDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+
+      // Create object stores if they don't exist
+      STORES.forEach((storeName) => {
+        if (!db.objectStoreNames.contains(storeName)) {
+          console.log(`Creating object store: ${storeName}`);
+          db.createObjectStore(storeName, { keyPath: "id" });
+        }
+      });
+    };
+
+    request.onsuccess = () => {
+      console.log("Database initialized successfully");
+      resolve();
+    };
+
+    request.onerror = (event) => {
+      console.error("Error initializing database:", event.target.error);
+      resolve(); // Resolve anyway to not block SW installation
+    };
+  });
+}
 
 // Activation of service worker
 self.addEventListener("activate", (event) => {
@@ -105,8 +143,8 @@ self.addEventListener("sync", (event) => {
 // Function to sync pending tasks
 async function syncTasks() {
   try {
-    // Check if the object store exists before trying to access it
-    try {
+    // Ensure object store exists before trying to access
+    if (await ensureObjectStore(DB_NAME, "pendingTasks")) {
       const pendingTasksRequests = await getDBData("pendingTasks");
 
       if (pendingTasksRequests.length === 0) {
@@ -141,8 +179,8 @@ async function syncTasks() {
       clients.forEach((client) => {
         client.postMessage({ type: "SYNC_COMPLETE", category: "tasks" });
       });
-    } catch (error) {
-      console.error("Error with pendingTasks store:", error);
+    } else {
+      console.log("No pending tasks to sync - store not ready");
     }
   } catch (error) {
     console.error("Error during task sync:", error);
@@ -152,8 +190,8 @@ async function syncTasks() {
 // Function to sync notifications actions
 async function syncNotifications() {
   try {
-    // Check if the object store exists before trying to access it
-    try {
+    // Ensure object store exists before trying to access
+    if (await ensureObjectStore(DB_NAME, "pendingNotifications")) {
       const pendingNotifications = await getDBData("pendingNotifications");
 
       if (pendingNotifications.length === 0) {
@@ -191,19 +229,50 @@ async function syncNotifications() {
           category: "notifications",
         });
       });
-    } catch (error) {
-      console.error("Error with pendingNotifications store:", error);
+    } else {
+      console.log("No pending notifications to sync - store not ready");
     }
   } catch (error) {
     console.error("Error during notification sync:", error);
   }
 }
 
+// Check if object store exists and is accessible
+async function ensureObjectStore(dbName, storeName) {
+  return new Promise((resolve) => {
+    try {
+      const request = indexedDB.open(dbName);
+
+      request.onerror = () => {
+        console.log(`Error checking object store ${storeName}`);
+        resolve(false);
+      };
+
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        const exists = db.objectStoreNames.contains(storeName);
+        db.close();
+
+        if (!exists) {
+          console.log(`Object store ${storeName} does not exist yet`);
+          // Try to create the store
+          initializeDatabase().then(() => resolve(false));
+        } else {
+          resolve(true);
+        }
+      };
+    } catch (error) {
+      console.error("Error in ensureObjectStore:", error);
+      resolve(false);
+    }
+  });
+}
+
 // IndexedDB helper functions
 function getDBData(storeName) {
   return new Promise((resolve, reject) => {
     try {
-      const request = indexedDB.open("taskManagementOfflineDB", 1);
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = (event) => {
         console.error("IndexedDB error:", event.target.error);
@@ -212,10 +281,12 @@ function getDBData(storeName) {
       };
 
       request.onupgradeneeded = (event) => {
-        console.log("IndexedDB upgrade needed");
-        // If the database is being created/upgraded now, it doesn't have our data
-        // We'll resolve with an empty array
-        resolve([]);
+        const db = event.target.result;
+
+        // Create object store if it doesn't exist
+        if (!db.objectStoreNames.contains(storeName)) {
+          db.createObjectStore(storeName, { keyPath: "id" });
+        }
       };
 
       request.onsuccess = (event) => {
@@ -271,7 +342,7 @@ function getDBData(storeName) {
 function removeDBData(storeName, id) {
   return new Promise((resolve) => {
     try {
-      const request = indexedDB.open("taskManagementOfflineDB", 1);
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = (event) => {
         console.error("IndexedDB error:", event.target.error);

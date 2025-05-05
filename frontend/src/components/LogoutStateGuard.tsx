@@ -18,21 +18,14 @@ const LogoutStateGuard = ({ children }: { children: ReactNode }) => {
     const isAuthPage = ["/login", "/register", "/logout"].includes(pathname);
     if (isAuthPage) return;
 
-    // Check for force logout flag
+    // Check for force logout flag - redirect to login if logged out
     if (isLoggedOut()) {
       console.log("Detected logout flag! Redirecting to login...");
       window.location.href = "/login";
       return;
     }
 
-    // Check for inconsistent auth state (user in store but logout flag set)
-    if (user && isLoggedOut()) {
-      console.log("Inconsistent auth state detected! Forcing logout...");
-      window.location.href = "/logout";
-      return;
-    }
-
-    // Check for dashboard access without auth
+    // Check for dashboard access without auth - this runs only if NOT logged out
     if (!user && pathname.includes("/dashboard")) {
       console.log("Unauthorized dashboard access! Redirecting to login...");
       window.location.href = "/login";
