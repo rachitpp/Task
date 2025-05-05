@@ -1,7 +1,10 @@
 import axios from "axios";
 import { TaskInput } from "@/stores/taskStore";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+// Update this URL to your Render.com backend URL
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://task2-backend-uptm.onrender.com//api";
 
 // Create an axios instance with custom defaults
 const api = axios.create({
