@@ -1,224 +1,334 @@
-# Task Management System
+# 📋 Task Management System
 
-A comprehensive task management system with user authentication, task management, team collaboration, and more.
+<div align="center">
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js"/>
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express.js"/>
+  <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"/>
+</div>
 
-## 🚀 Features
+<p align="center">
+  A modern, comprehensive task management system with user authentication, real-time notifications, team collaboration, and powerful task organization capabilities.
+</p>
 
-### Core Features
+<div align="center">
+  <img src="frontend/public/dashboard_preview.png" alt="Dashboard Preview" width="80%" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
+</div>
 
-- **User Authentication**: Registration, login, secure password storage, session handling
-- **Task Management**: Create, read, update, delete tasks with title, description, due date, priority, status
-- **Team Collaboration**: Assign tasks to other users, notify them on assignment
-- **Dashboard**: Show tasks assigned to user, tasks they created, overdue tasks
-- **Search & Filter**: Filter by title, description, status, priority, due date
+## ✨ Features
 
-### Advanced Features
+### 🔐 User Management
 
-- **Role-Based Access Control**: Admin, Manager, Regular User permissions
-- **Real-Time Notifications**: For task assignments and updates
-- **Recurring Tasks**: Support for daily, weekly, monthly repeats
-- **Audit Logging**: Track user actions
-- **Unit & Integration Tests**: Using Jest
+- **Secure Authentication**: Email & password login with JWT tokens
+- **User Profiles**: Customizable user profiles with roles and preferences
+- **Role-Based Access Control**: Admin, Manager, and User permission levels
+- **Account Management**: Password reset, email updates, and profile customization
 
-## 🛠️ Tech Stack
+### 📝 Task Organization
 
-### Backend
+- **Comprehensive Task Creation**: Title, description, priority levels, due dates, and categories
+- **Advanced Filtering**: Search tasks by any criteria including assignee, status, or due date
+- **Task Statuses**: Track progress with To Do, In Progress, Under Review, and Completed statuses
+- **Priority Levels**: Organize tasks by Low, Medium, High, and Urgent priorities
 
-- **Node.js** with **Express.js**
-- **MongoDB** for database
-- **JWT** for authentication
-- **bcrypt** for password hashing
-- **express-validator** for input validation
-- **Jest** for testing
+### 👥 Team Collaboration
 
-### Frontend
+- **Task Assignment**: Assign tasks to team members with notification alerts
+- **Task Comments**: Discuss tasks directly with contextual comments
+- **Team Visibility**: Share tasks and organize team workload efficiently
+- **Delegation Controls**: Transfer ownership and responsibility of tasks
 
-- **Next.js** with **TypeScript**
-- **TailwindCSS** for styling
-- **React Query** for data fetching
-- **Zustand** for state management
-- **React Hook Form** for form handling
+### 📊 Analytics & Reporting
 
-## 📋 Project Structure
+- **Task Completion Metrics**: Track completion rates and productivity
+- **Time Analysis**: Visualize task duration and team efficiency
+- **User Performance**: Review individual and team performance statistics
+- **Custom Reporting**: Generate reports based on various task parameters
+
+### 🔔 Real-Time Features
+
+- **Live Notifications**: Instant updates for task assignments and mentions
+- **Activity Feed**: Chronological log of all task-related activities
+- **Status Updates**: Real-time status changes visible to all team members
+- **Due Date Alerts**: Automatic reminders for approaching deadlines
+
+### 🔄 Advanced Features
+
+- **Recurring Tasks**: Schedule repeating tasks (daily, weekly, monthly)
+- **Offline Support**: Continue working without internet connection (PWA)
+- **Dark/Light Mode**: Choose your preferred visual theme
+- **Mobile Responsive**: Full functionality on all device sizes
+
+## 🛠️ Technology Stack
+
+### Backend Architecture
+
+- **Runtime**: Node.js with Express.js for API development
+- **Database**: MongoDB with Mongoose ODM for data modeling
+- **Authentication**: JWT (JSON Web Tokens) with HTTP-only cookies
+- **Real-time**: Socket.IO for live notifications and updates
+- **Security**: bcrypt for password hashing, Helmet.js for HTTP security
+
+### Frontend Framework
+
+- **Framework**: Next.js 13+ with App Router and Server Components
+- **Language**: TypeScript for type safety and developer experience
+- **State Management**: Zustand for global state with React Query for data fetching
+- **Styling**: TailwindCSS for responsive design and theming
+- **Forms**: React Hook Form with Zod validation
+
+### DevOps & Deployment
+
+- **CI/CD**: GitHub Actions for continuous integration
+- **Deployment**: Vercel (frontend) and Render (backend)
+- **Testing**: Jest and React Testing Library
+- **Monitoring**: Sentry for error tracking
+
+## 📦 Project Structure
 
 ```
-task-management-system/
-├── backend/                # Express.js server
+task-management/
+├── backend/                # Express.js API server
 │   ├── src/
-│   │   ├── config/         # Configuration files
-│   │   ├── controllers/    # Route controllers
-│   │   ├── middleware/     # Middleware functions
-│   │   ├── models/         # Mongoose models
-│   │   ├── routes/         # Express routes
-│   │   ├── tests/          # Jest tests
-│   │   ├── utils/          # Utility functions
-│   │   └── server.js       # Express app entry point
-│   ├── .env                # Environment variables
+│   │   ├── config/         # Environment configuration
+│   │   ├── controllers/    # API route handlers
+│   │   ├── middleware/     # Custom middleware functions
+│   │   ├── models/         # MongoDB schema models
+│   │   ├── routes/         # API endpoint definitions
+│   │   ├── services/       # Business logic services
+│   │   ├── utils/          # Helper utilities
+│   │   ├── sockets/        # Real-time socket handlers
+│   │   └── server.js       # Application entry point
+│   ├── tests/              # Backend test suites
 │   └── package.json        # Backend dependencies
 │
-└── frontend/               # Next.js client
+└── frontend/               # Next.js web application
     ├── src/
-    │   ├── app/            # Next.js App Router
-    │   ├── components/     # React components
+    │   ├── app/            # Next.js App Router pages
+    │   ├── components/     # Reusable UI components
     │   ├── hooks/          # Custom React hooks
-    │   ├── lib/            # Client utilities
-    │   ├── services/       # API service layer
-    │   └── stores/         # Zustand stores
-    ├── public/             # Static files
+    │   ├── providers/      # Context providers
+    │   ├── services/       # API client services
+    │   ├── stores/         # Zustand state stores
+    │   ├── types/          # TypeScript type definitions
+    │   └── utils/          # Frontend utilities
+    ├── public/             # Static assets
+    ├── styles/             # Global CSS and themes
     └── package.json        # Frontend dependencies
 ```
 
-## 🔧 Setup & Installation
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (v16+)
-- MongoDB
+- Node.js 16.x or higher
+- MongoDB 4.4 or higher
+- npm or yarn package manager
 
 ### Backend Setup
 
-1. Navigate to the backend directory:
+1. **Clone the repository**
 
-   ```
-   cd task-management-system/backend
+   ```bash
+   git clone https://github.com/yourusername/task-management.git
+   cd task-management
    ```
 
-2. Install dependencies:
+2. **Install backend dependencies**
 
-   ```
+   ```bash
+   cd backend
    npm install
    ```
 
-3. Create a `.env` file based on `.env.example`:
+3. **Configure environment variables**
+
+   Create a `.env` file in the backend directory:
 
    ```
    PORT=5000
    NODE_ENV=development
-   MONGO_URI=mongodb://localhost:27017/task-management-system
-   JWT_SECRET=your_jwt_secret_here
-   JWT_EXPIRES_IN=30d
-   COOKIE_EXPIRES_IN=30
+   MONGODB_URI=mongodb://localhost:27017/task-management
+   JWT_SECRET=your_jwt_secret_key
+   JWT_EXPIRES_IN=7d
+   COOKIE_EXPIRES_IN=7
    ```
 
-4. Start the development server:
-   ```
+4. **Start the development server**
+   ```bash
    npm run dev
    ```
+   The API server will be available at http://localhost:5000
 
 ### Frontend Setup
 
-1. Navigate to the frontend directory:
+1. **Install frontend dependencies**
 
-   ```
-   cd task-management-system/frontend
-   ```
-
-2. Install dependencies:
-
-   ```
+   ```bash
+   cd frontend
    npm install
    ```
 
-3. Start the development server:
+2. **Configure environment variables**
+
+   Create a `.env.local` file in the frontend directory:
+
    ```
+   NEXT_PUBLIC_API_URL=http://localhost:5000/api
+   ```
+
+3. **Start the Next.js development server**
+   ```bash
    npm run dev
    ```
+   The web application will be available at http://localhost:3000
 
-## 🧪 Running Tests
+## 💻 Development Workflow
 
-### Backend Tests
+### Code Standards
 
-```
-cd task-management-system/backend
-npm test
-```
+- **Linting**: ESLint configured for TypeScript
+- **Formatting**: Prettier for consistent code style
+- **Commit Messages**: Follow conventional commit format
+- **Branch Strategy**: Feature branches with pull requests to main
 
-### Frontend Tests
+### Testing
 
-```
-cd task-management-system/frontend
-npm test
-```
-
-## 🚀 Deployment
-
-This application can be deployed to:
-
-- Backend: Render, Railway, Heroku
-- Frontend: Vercel, Netlify
-
-## 📝 Design Decisions & Approaches
-
-### Database Schema Design
-
-- **User Model**: Includes authentication fields, role-based permissions, and notification preferences
-- **Task Model**: Stores task details with relations to creators and assignees
-- **Notification Model**: Handles task assignments and updates notifications
-- **Audit Log Model**: Records user actions for security and accountability
-
-### Security Implementation
-
-- Passwords hashed with bcrypt
-- JWT stored in HTTP-only cookies
-- Input validation for all API endpoints
-- CORS configured for secure cross-origin requests
-- Helmet.js for HTTP security headers
-
-### API Structure
-
-- RESTful design principles
-- Consistent response format
-- Proper error handling and validation
-- Middleware for authentication and authorization
-
-## 🤝 Contribution & Development
-
-This project was developed as part of a take-home assignment. Contributions are welcome through pull requests.
-
-## 📄 License
-
-This project is MIT licensed.
-
-## 🙏 Acknowledgements
-
-- Assisted by AI tools for code scaffolding and boilerplate generation
-- UI design inspired by modern productivity applications
-
-## Administrator Setup
-
-The application requires at least one administrator account to manage users and roles. There are several ways to create the initial administrator:
-
-### Option 1: Use the Admin Seeding Script
-
-Run the following command to create an initial admin user:
+Run backend tests:
 
 ```bash
+cd backend
+npm test
+```
+
+Run frontend tests:
+
+```bash
+cd frontend
+npm test
+```
+
+### Building for Production
+
+Backend build:
+
+```bash
+cd backend
+npm run build
+```
+
+Frontend build:
+
+```bash
+cd frontend
+npm run build
+```
+
+## 🌐 Deployment
+
+### Backend Deployment (Render)
+
+1. Create a new Web Service on Render
+2. Connect to your GitHub repository
+3. Set build command: `cd backend && npm install && npm run build`
+4. Set start command: `cd backend && npm start`
+5. Add environment variables as configured in `.env`
+
+### Frontend Deployment (Vercel)
+
+1. Import your repository to Vercel
+2. Set the root directory to `frontend`
+3. Vercel will automatically detect Next.js and configure the build
+4. Add environment variables as needed
+
+## 👥 User Roles and Permissions
+
+### Admin
+
+- Complete system access
+- Manage users and roles
+- Access analytics and reports
+- Configure system settings
+
+### Manager
+
+- Create and manage projects
+- Assign tasks to team members
+- View team analytics
+- Generate reports
+
+### User
+
+- View assigned tasks
+- Create personal tasks
+- Update task status
+- Communicate on task threads
+
+## 🧰 Administrator Setup
+
+The application requires at least one administrator account. Here are the options to create the initial admin:
+
+### Option 1: Admin Seeding Script
+
+```bash
+cd backend
 npm run seed:admin
 ```
 
-This will create an admin user with the following credentials (which can be customized via environment variables):
+This creates an admin with these default credentials:
 
-- Email: admin@example.com (override with ADMIN_EMAIL)
-- Password: adminPassword123! (override with ADMIN_PASSWORD)
-- Name: Admin User (override with ADMIN_NAME)
+- Email: admin@example.com
+- Password: adminPassword123!
+- Name: Admin User
 
-### Option 2: Enable First-User-As-Admin Mode
+### Option 2: First-User-Admin Mode
 
-Set the following environment variable in your .env file:
+Add to your backend `.env` file:
 
 ```
 FIRST_USER_ADMIN=true
 ```
 
-With this setting, the first user who registers in the system will automatically be assigned the admin role.
+The first registered user will automatically receive admin privileges.
 
 ### Option 3: Manual Database Update
-
-If you already have users in the system but no admin, you can update a user's role directly in the database:
 
 ```javascript
 // Using MongoDB shell
 db.users.updateOne({ email: "user@example.com" }, { $set: { role: "admin" } });
 ```
 
-**Important Security Note:** After setting up your administrator account, if you used Option 2 (FIRST_USER_ADMIN), make sure to set this environment variable back to `false` to prevent any security issues.
+## 📱 Mobile and PWA Support
+
+The application works as a Progressive Web App (PWA) with:
+
+- Offline capabilities
+- Home screen installation
+- Push notifications
+- Responsive design for all device sizes
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📬 Contact
+
+Project Link: [https://github.com/yourusername/task-management](https://github.com/yourusername/task-management)
+
+---
+
+<div align="center">
+  <p>Built with ❤️ by Your Team</p>
+</div>
