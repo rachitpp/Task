@@ -86,6 +86,11 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
       const response = await authApi.register({ name, email, password });
       set({ user: response.data, loading: false });
+
+      // Save token to localStorage if provided in response
+      if (response.token) {
+        localStorage.setItem("authToken", response.token);
+      }
     } catch (error: unknown) {
       const apiError = error as ApiError;
       set({

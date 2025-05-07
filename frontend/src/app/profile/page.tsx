@@ -291,13 +291,23 @@ const ProfilePage = () => {
                   </button>
                   <button
                     onClick={() => {
-                      logout()
-                        .then(() => {
-                          router.push("/");
-                        })
-                        .catch((error) => {
-                          console.error("Error logging out:", error);
-                        });
+                      // Set logout flags immediately
+                      localStorage.setItem("FORCE_LOGOUT", "true");
+                      localStorage.setItem("logged_out", "true");
+
+                      // Remove auth token immediately
+                      localStorage.removeItem("authToken");
+
+                      // Redirect to homepage immediately
+                      window.location.href =
+                        "/?action=logout&t=" + new Date().getTime();
+
+                      // Call logout in the background for cleanup
+                      setTimeout(() => {
+                        logout().catch((error) =>
+                          console.error("Error in background logout:", error)
+                        );
+                      }, 100);
                     }}
                     className="px-3 py-1.5 text-sm border border-red-300 text-red-600 bg-red-50 rounded-md hover:bg-red-100 flex items-center"
                   >

@@ -14,13 +14,26 @@ const LogoutStateGuard = ({ children }: { children: ReactNode }) => {
   const { user } = useAuthStore();
 
   useEffect(() => {
-    // Don't run this check on login, register, or logout pages
-    const isAuthPage = ["/login", "/register", "/logout"].includes(pathname);
+    // Don't run this check on login, register, logout, or homepage
+    const isAuthPage = ["/login", "/register", "/logout", "/"].includes(
+      pathname
+    );
     if (isAuthPage) return;
 
-    // Check for force logout flag - redirect to login if logged out
-    if (isLoggedOut()) {
-      console.log("Detected logout flag! Redirecting to login...");
+    // Check for force logout flag - redirect to homepage when user explicitly logs out
+    const isExplicitLogout =
+      localStorage.getItem("FORCE_LOGOUT") === "true" ||
+      localStorage.getItem("logged_out") === "true";
+
+    if (isExplicitLogout) {
+      console.log("Detected explicit logout! Redirecting to homepage...");
+      window.location.href = "/";
+      return;
+    }
+
+    // For other logout cases (session expiry, etc), redirect to login
+    if (isLoggedOut(pathname) && !isExplicitLogout) {
+      console.log("Detected session expiry! Redirecting to login...");
       window.location.href = "/login";
       return;
     }

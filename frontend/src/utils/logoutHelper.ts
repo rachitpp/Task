@@ -108,16 +108,16 @@ export const forceLogout = async () => {
   }
 
   // 4. Force reload and redirect to login page
-  console.log("Redirecting to login page...");
+  console.log("Redirecting to homepage...");
 
   // Use a more aggressive reload approach
   try {
     // Force a full page reload with cache clearing
-    window.location.href = "/login?t=" + new Date().getTime();
+    window.location.href = "/?t=" + new Date().getTime();
   } catch (e) {
     console.error("Error during redirect:", e);
     // Fallback
-    window.location.replace("/login");
+    window.location.replace("/");
   }
 };
 
@@ -167,7 +167,7 @@ export const hasRecentlyLoggedOut = (): boolean => {
 };
 
 // Function to check if user is forcibly logged out
-export const isLoggedOut = () => {
+export const isLoggedOut = (checkPath?: string) => {
   // First check if user has recently logged out
   if (hasRecentlyLoggedOut()) {
     return true;
@@ -179,9 +179,13 @@ export const isLoggedOut = () => {
     localStorage.getItem("FORCE_LOGOUT") === "true" ||
     sessionStorage.getItem("FORCE_LOGOUT") === "true";
 
-  // Also check for auth token absence as an indicator of logout
-  const hasNoAuthToken = !localStorage.getItem("authToken");
+  // For homepage specifically, only consider explicit logout flags
+  if (checkPath === "/" || window.location.pathname === "/") {
+    return hasLogoutFlag;
+  }
 
+  // For other paths, also check for auth token absence as an indicator of logout
+  const hasNoAuthToken = !localStorage.getItem("authToken");
   return hasLogoutFlag || hasNoAuthToken;
 };
 

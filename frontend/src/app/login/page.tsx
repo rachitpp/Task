@@ -35,6 +35,34 @@ const LoginPage = () => {
     clearError();
   }, [clearError]);
 
+  // Clear form fields on component mount
+  useEffect(() => {
+    // Reset form fields
+    setEmail("");
+    setPassword("");
+
+    // Add a random attribute to form to prevent browser autocomplete
+    const form = document.getElementById("login-form");
+    if (form) {
+      form.setAttribute("autocomplete", "off");
+      form.setAttribute("data-form-type", "login");
+    }
+
+    // Try to clear browser autocomplete cache on inputs
+    const emailInput = document.getElementById("email") as HTMLInputElement;
+    const passwordInput = document.getElementById(
+      "password"
+    ) as HTMLInputElement;
+    if (emailInput) {
+      emailInput.setAttribute("autocomplete", "new-password");
+      emailInput.value = "";
+    }
+    if (passwordInput) {
+      passwordInput.setAttribute("autocomplete", "new-password");
+      passwordInput.value = "";
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
@@ -88,7 +116,13 @@ const LoginPage = () => {
           </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          id="login-form"
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          autoComplete="off"
+          data-form-type="login"
+        >
           <div className="mb-3">
             <label
               htmlFor="email"
@@ -99,11 +133,13 @@ const LoginPage = () => {
             <input
               type="email"
               id="email"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               placeholder="Enter your email"
               required
+              autoComplete="new-password"
             />
           </div>
 
@@ -117,11 +153,13 @@ const LoginPage = () => {
             <input
               type="password"
               id="password"
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               placeholder="Enter your password"
               required
+              autoComplete="new-password"
             />
           </div>
 

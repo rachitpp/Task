@@ -50,15 +50,24 @@ const Navbar: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      // First immediately redirect to root homepage
-      window.location.href = "/";
+      // First set a flag that we're explicitly logging out
+      localStorage.setItem("FORCE_LOGOUT", "true");
+      localStorage.setItem("logged_out", "true");
 
-      // Then logout in background
+      // Remove auth token immediately
+      localStorage.removeItem("authToken");
+
+      // Then immediately redirect to homepage
+      window.location.href = "/?action=logout&t=" + new Date().getTime();
+
+      // In the background, call the API for cleanup
       setTimeout(() => {
         logout().catch((error) => console.error("Error logging out:", error));
       }, 100);
     } catch (error) {
       console.error("Error with logout process:", error);
+      // Fallback redirect if something goes wrong
+      window.location.href = "/";
     }
   };
 

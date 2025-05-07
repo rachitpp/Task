@@ -24,11 +24,26 @@ const Navigation: React.FC = () => {
       // First close the menu
       closeMenu();
 
-      // Call the store's logout method - it now handles everything
-      await logout();
+      // Set logout flags immediately
+      localStorage.setItem("FORCE_LOGOUT", "true");
+      localStorage.setItem("logged_out", "true");
+
+      // Remove auth token immediately
+      localStorage.removeItem("authToken");
+
+      // Redirect to homepage immediately
+      window.location.href = "/?action=logout&t=" + new Date().getTime();
+
+      // Call logout in the background for cleanup
+      setTimeout(() => {
+        logout().catch((error) =>
+          console.error("Error in background logout:", error)
+        );
+      }, 100);
     } catch (error) {
       console.error("Logout failed:", error);
-      // The store will still handle force logout even if there's an error
+      // Fallback redirect
+      window.location.href = "/";
     }
   };
 

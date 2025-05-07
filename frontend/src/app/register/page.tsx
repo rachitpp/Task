@@ -6,6 +6,7 @@ import Link from "next/link";
 import useAuthStore from "@/stores/authStore";
 import { AxiosError } from "axios";
 import { motion } from "framer-motion";
+import { clearLogoutFlag } from "@/utils/logoutHelper";
 
 // Define error type
 type ApiError = AxiosError<{
@@ -40,6 +41,32 @@ const RegisterPage = () => {
     clearError();
   }, [clearError]);
 
+  // Clear form fields on component mount and prevent autocomplete
+  useEffect(() => {
+    // Reset form fields
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+
+    // Add form attributes to prevent browser autocomplete
+    const form = document.getElementById("register-form");
+    if (form) {
+      form.setAttribute("autocomplete", "off");
+      form.setAttribute("data-form-type", "register");
+    }
+
+    // Clear browser autocomplete cache on inputs
+    const inputs = ["name", "email", "password", "confirm-password"];
+    inputs.forEach((id) => {
+      const input = document.getElementById(id) as HTMLInputElement;
+      if (input) {
+        input.setAttribute("autocomplete", "new-password");
+        input.value = "";
+      }
+    });
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
@@ -68,7 +95,14 @@ const RegisterPage = () => {
 
     try {
       await register(name, email, password);
-      router.push("/dashboard");
+
+      // Ensure all logout flags are cleared
+      clearLogoutFlag();
+
+      // Redirect to dashboard with a slight delay to allow state to update
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 100);
     } catch (err: unknown) {
       const apiError = err as ApiError;
       setFormError(apiError.response?.data?.message || "Registration failed");
@@ -107,7 +141,13 @@ const RegisterPage = () => {
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form
+          id="register-form"
+          className="space-y-4"
+          onSubmit={handleSubmit}
+          autoComplete="off"
+          data-form-type="register"
+        >
           <div>
             <label
               htmlFor="name"
@@ -119,7 +159,7 @@ const RegisterPage = () => {
               id="name"
               name="name"
               type="text"
-              autoComplete="name"
+              autoComplete="new-password"
               required
               className="appearance-none rounded-lg relative block w-full px-3 py-2 bg-gray-50 border border-gray-200 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               placeholder="Enter your full name"
@@ -130,16 +170,16 @@ const RegisterPage = () => {
 
           <div>
             <label
-              htmlFor="email-address"
+              htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Email Address
             </label>
             <input
-              id="email-address"
+              id="email"
               name="email"
               type="email"
-              autoComplete="email"
+              autoComplete="new-password"
               required
               className="appearance-none rounded-lg relative block w-full px-3 py-2 bg-gray-50 border border-gray-200 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               placeholder="Enter your email address"

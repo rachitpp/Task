@@ -9,6 +9,12 @@ import { isLoggedOut } from "@/utils/logoutHelper";
 export default function Home() {
   const { user, initialized } = useAuthStore();
 
+  // Use this to override logout check for homepage
+  useEffect(() => {
+    // Force check with homepage path to prevent redirection
+    isLoggedOut("/");
+  }, []);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header - Simplified and clean */}
