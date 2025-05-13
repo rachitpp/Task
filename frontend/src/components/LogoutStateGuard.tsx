@@ -32,7 +32,7 @@ const LogoutStateGuard = ({ children }: { children: ReactNode }) => {
     }
 
     // For other logout cases (session expiry, etc), redirect to login
-    if (isLoggedOut(pathname) && !isExplicitLogout) {
+    if (isLoggedOut() && !isExplicitLogout) {
       console.log("Detected session expiry! Redirecting to login...");
       window.location.href = "/login";
       return;
