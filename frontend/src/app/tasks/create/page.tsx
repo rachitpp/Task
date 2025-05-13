@@ -60,10 +60,10 @@ const CreateTaskPage = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-sm p-4 mb-4 mt-16 pt-6 border border-gray-100">
-      <h1 className="text-2xl font-semibold text-gray-800 mb-4 mt-2 flex items-center">
+    <div className="p-3 sm:p-4">
+      <h1 className="text-lg font-semibold text-gray-800 flex items-center pb-2 mb-3 border-b border-gray-200">
         <svg
-          className="w-6 h-6 mr-2 text-blue-600"
+          className="w-4 h-4 mr-2 text-blue-600"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -85,11 +85,11 @@ const CreateTaskPage = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-2.5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
           <div className="col-span-2">
             <label
-              className="block text-gray-700 text-sm font-medium mb-1"
+              className="block text-gray-700 text-xs font-medium mb-1"
               htmlFor="title"
             >
               Title
@@ -107,7 +107,7 @@ const CreateTaskPage = () => {
 
           <div className="col-span-2">
             <label
-              className="block text-gray-700 text-sm font-medium mb-1"
+              className="block text-gray-700 text-xs font-medium mb-1"
               htmlFor="description"
             >
               Description
@@ -124,7 +124,7 @@ const CreateTaskPage = () => {
 
           <div>
             <label
-              className="block text-gray-700 text-sm font-medium mb-1"
+              className="block text-gray-700 text-xs font-medium mb-1"
               htmlFor="dueDate"
             >
               Due Date
@@ -140,7 +140,7 @@ const CreateTaskPage = () => {
 
           <div>
             <label
-              className="block text-gray-700 text-sm font-medium mb-1"
+              className="block text-gray-700 text-xs font-medium mb-1"
               htmlFor="priority"
             >
               Priority
@@ -161,7 +161,7 @@ const CreateTaskPage = () => {
 
           <div>
             <label
-              className="block text-gray-700 text-sm font-medium mb-1"
+              className="block text-gray-700 text-xs font-medium mb-1"
               htmlFor="status"
             >
               Status
@@ -188,7 +188,7 @@ const CreateTaskPage = () => {
 
           <div>
             <label
-              className="block text-gray-700 text-sm font-medium mb-1"
+              className="block text-gray-700 text-xs font-medium mb-1"
               htmlFor="assignedTo"
             >
               Assign To
@@ -218,7 +218,7 @@ const CreateTaskPage = () => {
             />
             <label
               htmlFor="isRecurring"
-              className="ml-2 block text-gray-700 text-sm"
+              className="ml-2 block text-gray-700 text-xs"
             >
               Recurring Task
             </label>
@@ -227,7 +227,7 @@ const CreateTaskPage = () => {
           {isRecurring && (
             <div>
               <label
-                className="block text-gray-700 text-sm font-medium mb-1"
+                className="block text-gray-700 text-xs font-medium mb-1"
                 htmlFor="recurrencePattern"
               >
                 Recurrence Pattern
@@ -251,7 +251,7 @@ const CreateTaskPage = () => {
 
           <div className="col-span-2">
             <label
-              className="block text-gray-700 text-sm font-medium mb-1"
+              className="block text-gray-700 text-xs font-medium mb-1"
               htmlFor="tags"
             >
               Tags (comma separated)
@@ -265,23 +265,51 @@ const CreateTaskPage = () => {
               onChange={(e) => setTags(e.target.value)}
             />
           </div>
-        </div>
 
-        <div className="mt-4 flex justify-end space-x-3">
-          <button
-            type="button"
-            className="px-3 py-1.5 text-sm border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            onClick={() => router.back()}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-3 py-1.5 text-sm border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            disabled={loading}
-          >
-            {loading ? "Creating..." : "Create Task"}
-          </button>
+          <div className="col-span-2 mt-1">
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
+                onClick={() => router.back()}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors duration-200 flex items-center"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-3 w-3 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Creating...
+                  </>
+                ) : (
+                  "Create Task"
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </form>
     </div>

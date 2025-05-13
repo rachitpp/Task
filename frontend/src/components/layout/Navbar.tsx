@@ -90,7 +90,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-2 sm:px-3 py-2 sm:py-3 fixed left-0 right-0 top-0 z-50 lg:left-64 shadow-sm">
+    <nav className="bg-white border-b border-gray-200 py-1 px-2 fixed left-0 right-0 top-0 z-50 lg:left-64 shadow-sm">
       <div className="flex flex-wrap justify-between items-center">
         <div className="flex items-center justify-start">
           {/* Mobile menu button */}
@@ -98,11 +98,11 @@ const Navbar: React.FC = () => {
             id="sidebar-toggle-button"
             onClick={toggleSidebar}
             type="button"
-            className="inline-flex items-center p-1.5 text-sm text-gray-700 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="inline-flex items-center p-1 text-sm text-gray-700 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <span className="sr-only">Open sidebar</span>
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -114,7 +114,7 @@ const Navbar: React.FC = () => {
               ></path>
             </svg>
           </button>
-          <span className="ml-2 text-lg sm:text-xl font-semibold lg:hidden text-black truncate">
+          <span className="ml-2 text-sm font-semibold lg:hidden text-gray-800 truncate">
             Task Management
           </span>
         </div>
@@ -125,20 +125,20 @@ const Navbar: React.FC = () => {
 
           {/* Profile dropdown */}
           <div
-            className="relative ml-2 sm:ml-3"
+            className="relative ml-2"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             <button
               type="button"
-              className="flex items-center gap-1 sm:gap-2 max-w-xs text-sm bg-gray-200 rounded-full focus:ring-4 focus:ring-gray-300 p-1"
+              className="flex items-center gap-1 max-w-xs text-sm bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-full focus:ring-1 focus:ring-blue-300 p-0.5 pl-1 pr-2 transition-all duration-200 border border-blue-100"
               id="user-menu-button"
               aria-expanded={profileMenuOpen}
             >
               <span className="sr-only">Open user menu</span>
-              <div className="relative w-7 h-7 sm:w-8 sm:h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+              <div className="relative w-6 h-6 overflow-hidden bg-blue-100 rounded-full">
                 <svg
-                  className="absolute w-9 h-9 sm:w-10 sm:h-10 text-gray-400 -left-1"
+                  className="absolute w-7 h-7 text-blue-500 -left-0.5 -top-0.5"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +150,7 @@ const Navbar: React.FC = () => {
                   ></path>
                 </svg>
               </div>
-              <span className="hidden md:inline-block text-sm font-medium text-gray-700 max-w-[150px] truncate">
+              <span className="hidden md:inline-block text-xs font-medium text-gray-700 max-w-[150px] truncate">
                 {user?.name || "User"}
               </span>
             </button>
@@ -158,29 +158,28 @@ const Navbar: React.FC = () => {
             {/* Profile dropdown menu */}
             {profileMenuOpen && (
               <div
-                className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                className="absolute right-0 z-50 mt-1.5 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-100"
                 role="menu"
                 aria-orientation="vertical"
                 aria-labelledby="user-menu-button"
               >
-                <div className="px-3 py-2">
-                  <span className="block text-sm text-black font-medium break-words">
+                <div className="px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+                  <span className="block text-sm text-gray-900 font-medium break-words">
                     {user?.name || "User"}
                   </span>
-                  <span className="block text-sm text-gray-700 truncate">
+                  <span className="block text-xs text-gray-600 truncate">
                     {user?.email || "user@example.com"}
                   </span>
                 </div>
-                <hr className="border-gray-200" />
                 <Link
                   href="/profile"
-                  className="block px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100"
+                  className="block px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
                   role="menuitem"
                 >
                   Profile
                 </Link>
                 <button
-                  className="w-full text-left block px-3 py-1.5 text-sm text-gray-900 hover:bg-gray-100"
+                  className="w-full text-left block px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50"
                   role="menuitem"
                   onClick={handleLogout}
                 >
