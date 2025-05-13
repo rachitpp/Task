@@ -11,8 +11,8 @@ export default function Home() {
 
   // Use this to override logout check for homepage
   useEffect(() => {
-    // Force check with homepage path to prevent redirection
-    isLoggedOut("/");
+    // Check logout status without parameters
+    isLoggedOut();
   }, []);
 
   return (
