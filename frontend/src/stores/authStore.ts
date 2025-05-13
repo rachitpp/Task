@@ -57,21 +57,64 @@ const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ loading: true, error: null, recentlyLoggedOut: false });
 
-      // Clear any previous logout flags first
+      // Clear any previous logout flags first - do this once
       clearLogoutFlag();
 
-      const response = await authApi.login({ email, password });
-      set({ user: response.data, loading: false });
+      // Clear any stale token that might be causing issues
+      localStorage.removeItem("authToken");
+      sessionStorage.removeItem("authToken");
+
+      console.log("Attempting login for:", email);
+
+      // Perform login request with timeout to prevent hanging
+      const loginPromise = authApi.login({ email, password });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Login request timed out")), 15000)
+      );
+
+      const response = await Promise.race([loginPromise, timeoutPromise]);
+
+      console.log("Login successful, response:", response);
+
+      // Validate response structure
+      if (!response || !response.data) {
+        throw new Error("Invalid response from server");
+      }
 
       // Save token to localStorage if provided in response
       if (response.token) {
+        console.log("Saving auth token");
         localStorage.setItem("authToken", response.token);
+      } else {
+        console.warn("No token received from server");
       }
+
+      // Set user data in a single update
+      set({
+        user: response.data,
+        loading: false,
+        initialized: true,
+        recentlyLoggedOut: false,
+      });
+
+      return response; // Return the response for chaining
     } catch (error: unknown) {
+      console.error("Login error:", error);
+
       const apiError = error as ApiError;
+      let errorMessage = "Failed to login";
+
+      if (apiError.message === "Login request timed out") {
+        errorMessage = "Login request timed out, please try again";
+      } else if (apiError.response?.data?.message) {
+        errorMessage = apiError.response.data.message;
+      } else if (apiError.message) {
+        errorMessage = apiError.message;
+      }
+
       set({
         loading: false,
-        error: apiError.response?.data?.message || "Failed to login",
+        error: errorMessage,
       });
       throw error;
     }

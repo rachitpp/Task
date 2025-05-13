@@ -90,7 +90,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-3 py-3 fixed left-0 right-0 top-0 z-50 lg:left-64 shadow-sm">
+    <nav className="bg-white border-b border-gray-200 px-2 sm:px-3 py-2 sm:py-3 fixed left-0 right-0 top-0 z-50 lg:left-64 shadow-sm">
       <div className="flex flex-wrap justify-between items-center">
         <div className="flex items-center justify-start">
           {/* Mobile menu button */}
@@ -114,7 +114,7 @@ const Navbar: React.FC = () => {
               ></path>
             </svg>
           </button>
-          <span className="ml-2 text-xl font-semibold lg:hidden text-black">
+          <span className="ml-2 text-lg sm:text-xl font-semibold lg:hidden text-black truncate">
             Task Management
           </span>
         </div>
@@ -125,20 +125,20 @@ const Navbar: React.FC = () => {
 
           {/* Profile dropdown */}
           <div
-            className="relative ml-3"
+            className="relative ml-2 sm:ml-3"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
             <button
               type="button"
-              className="flex items-center gap-2 max-w-xs text-sm bg-gray-200 rounded-full focus:ring-4 focus:ring-gray-300 p-1"
+              className="flex items-center gap-1 sm:gap-2 max-w-xs text-sm bg-gray-200 rounded-full focus:ring-4 focus:ring-gray-300 p-1"
               id="user-menu-button"
               aria-expanded={profileMenuOpen}
             >
               <span className="sr-only">Open user menu</span>
-              <div className="relative w-8 h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+              <div className="relative w-7 h-7 sm:w-8 sm:h-8 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
                 <svg
-                  className="absolute w-10 h-10 text-gray-400 -left-1"
+                  className="absolute w-9 h-9 sm:w-10 sm:h-10 text-gray-400 -left-1"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                   xmlns="http://www.w3.org/2000/svg"

@@ -6,6 +6,7 @@ const {
   setTokenCookie,
   clearTokenCookie,
 } = require("../utils/generateToken");
+const { getCache, setCache, deleteCache } = require("../utils/cacheManager");
 
 /**
  * Register a new user
@@ -25,11 +26,11 @@ const registerUser = async (req, res) => {
 
     const { name, email, password } = req.body;
 
-    // Create case-insensitive regex for email check
-    const emailRegex = new RegExp(`^${email}$`, "i");
-
-    // Check if user already exists (case-insensitive)
-    const userExists = await User.findOne({ email: emailRegex });
+    // Check if user already exists (using case-insensitive index)
+    const userExists = await User.findOne({ email }).collation({
+      locale: "en",
+      strength: 2,
+    });
 
     if (userExists) {
       return res.status(400).json({
@@ -52,49 +53,38 @@ const registerUser = async (req, res) => {
       role: isFirstUser && firstUserAsAdmin ? "admin" : "user",
     });
 
-    if (user) {
-      // Create audit log for registration
-      await AuditLog.create({
-        user: user._id,
-        action: "user-register",
-        entity: "user",
-        entityId: user._id,
-        details: {
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          isFirstUser,
-        },
-        ipAddress: req.ip,
-        userAgent: req.headers["user-agent"],
-      });
+    // Generate token
+    const token = generateToken(user);
 
-      // Generate JWT token
-      const token = generateToken(user);
+    // Set JWT in HTTP-only cookie
+    setTokenCookie(res, token);
 
-      // Set JWT in HTTP-only cookie
-      setTokenCookie(res, token);
+    // Create audit log asynchronously
+    const auditLogPromise = AuditLog.create({
+      user: user._id,
+      action: "user-register",
+      entity: "user",
+      entityId: user._id,
+      details: {
+        email: user.email,
+      },
+      ipAddress: req.ip,
+      userAgent: req.headers["user-agent"],
+    }).catch((err) => console.error("Audit log creation error:", err));
 
-      // Return user data without password
-      res.status(201).json({
-        success: true,
-        token: token,
-        data: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          notificationPreferences: user.notificationPreferences,
-        },
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: "Invalid user data",
-      });
-    }
+    // Return user data
+    res.status(201).json({
+      success: true,
+      token: token,
+      data: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
-    console.error("Register error:", error);
+    console.error("Registration error:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -120,16 +110,21 @@ const loginUser = async (req, res) => {
 
     const { email, password } = req.body;
 
-    // Create case-insensitive regex for email check
-    const emailRegex = new RegExp(`^${email}$`, "i");
-
-    // Find user using case-insensitive email matching
-    const user = await User.findOne({ email: emailRegex }).select("+password");
+    // Find user using the case-insensitive index (no need for regex anymore)
+    const user = await User.findOne({ email })
+      .select("+password")
+      .collation({ locale: "en", strength: 2 });
 
     // Check if user exists and password matches
     if (user && (await user.matchPassword(password))) {
-      // Create audit log for login
-      await AuditLog.create({
+      // Generate JWT token
+      const token = generateToken(user);
+
+      // Set JWT in HTTP-only cookie
+      setTokenCookie(res, token);
+
+      // Create audit log for login asynchronously (don't await)
+      const auditLogPromise = AuditLog.create({
         user: user._id,
         action: "user-login",
         entity: "user",
@@ -139,15 +134,9 @@ const loginUser = async (req, res) => {
         },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
-      });
+      }).catch((err) => console.error("Audit log creation error:", err));
 
-      // Generate JWT token
-      const token = generateToken(user);
-
-      // Set JWT in HTTP-only cookie
-      setTokenCookie(res, token);
-
-      // Return user data without password
+      // Return user data without password immediately without waiting for audit log
       res.json({
         success: true,
         token: token,
@@ -181,20 +170,28 @@ const loginUser = async (req, res) => {
  */
 const logoutUser = async (req, res) => {
   try {
-    // Create audit log for logout
+    // Clear JWT cookie
+    clearTokenCookie(res);
+
+    // Create audit log for logout asynchronously
     if (req.user) {
-      await AuditLog.create({
+      const userId = req.user._id.toString();
+
+      // Delete user cache on logout
+      const deleteCachePromise = deleteCache(`user:profile:${userId}`);
+
+      // Create audit log asynchronously
+      const auditLogPromise = AuditLog.create({
         user: req.user._id,
         action: "user-logout",
         entity: "user",
         entityId: req.user._id,
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
-      });
-    }
+      }).catch((err) => console.error("Audit log creation error:", err));
 
-    // Clear JWT cookie
-    clearTokenCookie(res);
+      // No need to await these operations
+    }
 
     res.json({
       success: true,
@@ -216,18 +213,40 @@ const logoutUser = async (req, res) => {
  */
 const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const userId = req.user._id.toString();
+    const cacheKey = `user:profile:${userId}`;
+
+    // Try to get user from cache first
+    const cachedUser = await getCache(cacheKey);
+
+    if (cachedUser) {
+      return res.json({
+        success: true,
+        data: cachedUser,
+        source: "cache",
+      });
+    }
+
+    // If not in cache, get from database
+    const user = await User.findById(userId);
 
     if (user) {
+      // Format user data
+      const userData = {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        notificationPreferences: user.notificationPreferences,
+      };
+
+      // Cache the user data for 15 minutes (900 seconds)
+      await setCache(cacheKey, userData, 900);
+
       res.json({
         success: true,
-        data: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          notificationPreferences: user.notificationPreferences,
-        },
+        data: userData,
+        source: "database",
       });
     } else {
       res.status(404).json({
@@ -283,8 +302,8 @@ const updateUserProfile = async (req, res) => {
       // Save the updated user
       const updatedUser = await user.save();
 
-      // Create audit log for profile update
-      await AuditLog.create({
+      // Create audit log for profile update asynchronously
+      const auditLogPromise = AuditLog.create({
         user: user._id,
         action: "user-update",
         entity: "user",
@@ -296,7 +315,11 @@ const updateUserProfile = async (req, res) => {
         },
         ipAddress: req.ip,
         userAgent: req.headers["user-agent"],
-      });
+      }).catch((err) => console.error("Audit log creation error:", err));
+
+      // Delete user cache to ensure fresh data on next fetch
+      const userId = user._id.toString();
+      await deleteCache(`user:profile:${userId}`);
 
       // Return updated user data
       res.json({

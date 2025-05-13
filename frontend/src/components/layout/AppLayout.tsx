@@ -76,7 +76,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <Sidebar />
-      <div className="p-4 lg:p-6 lg:ml-64 pt-32 transition-all duration-300 overflow-visible">
+      <div className="p-3 sm:p-4 lg:p-6 lg:ml-64 pt-24 sm:pt-28 lg:pt-32 transition-all duration-300 overflow-visible">
         <div className="w-full overflow-visible">{children}</div>
       </div>
     </div>

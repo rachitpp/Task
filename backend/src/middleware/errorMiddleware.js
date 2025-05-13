@@ -1,8 +1,15 @@
+const logger = require("../utils/logger");
+
 /**
  * Error Handler for 404 - Not Found
  */
 const notFound = (req, res, next) => {
   const error = new Error(`Not Found - ${req.originalUrl}`);
+  logger.warn(`404 Not Found: ${req.originalUrl}`, {
+    method: req.method,
+    ip: req.ip,
+    userAgent: req.headers["user-agent"],
+  });
   res.status(404);
   next(error);
 };
@@ -11,6 +18,9 @@ const notFound = (req, res, next) => {
  * General Error Handler
  */
 const errorHandler = (err, req, res, next) => {
+  // Log the error with structured data
+  logger.logError(err, req);
+
   // Set status code (use the response status code, or 500 if not already set)
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   res.status(statusCode);
@@ -52,7 +62,7 @@ const errorHandler = (err, req, res, next) => {
   res.json({
     success: false,
     message: err.message,
-    stack: process.env.NODE_ENV === "production" ? null : err.stack,
+    stack: process.env.NODE_ENV === "production" ? "🥞" : err.stack,
   });
 };
 

@@ -156,25 +156,25 @@ const Sidebar: React.FC = () => {
   return (
     <aside
       id="logo-sidebar"
-      className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-white border-r border-gray-200 shadow-sm transition-transform -translate-x-full lg:translate-x-0 overflow-hidden"
+      className="fixed top-0 left-0 z-40 w-64 h-screen pt-16 sm:pt-18 lg:pt-20 bg-white border-r border-gray-200 shadow-sm transition-transform -translate-x-full lg:translate-x-0 overflow-hidden"
       aria-label="Sidebar"
     >
-      <div className="h-full px-3 py-4 overflow-y-auto bg-white">
+      <div className="h-full px-2 sm:px-3 py-3 sm:py-4 overflow-y-auto bg-white">
         {/* Main Navigation */}
         <ul className="space-y-1 font-medium">
           {/* Dashboard with special spacing */}
           {categories.main?.map((item) => (
-            <li key={item.href} className="mt-1 mb-3">
+            <li key={item.href} className="mt-1 mb-2 sm:mb-3">
               <Link
                 href={item.href}
-                className={`flex items-center p-2 rounded-lg transition-all duration-200 compact-text ${
+                className={`flex items-center p-1.5 sm:p-2 rounded-lg transition-all duration-200 compact-text ${
                   pathname === item.href
                     ? "bg-blue-100 text-blue-700 shadow-sm"
                     : "text-gray-700 hover:bg-gray-50"
                 }`}
               >
                 <div
-                  className={`flex items-center justify-center rounded-md w-7 h-7 flex-shrink-0 ${
+                  className={`flex items-center justify-center rounded-md w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0 ${
                     pathname === item.href
                       ? "bg-blue-200 text-blue-700"
                       : "text-gray-500 group-hover:text-blue-600"
@@ -182,7 +182,9 @@ const Sidebar: React.FC = () => {
                 >
                   {item.icon}
                 </div>
-                <span className="ms-2 font-medium truncate">{item.name}</span>
+                <span className="ms-2 text-sm sm:text-base font-medium truncate">
+                  {item.name}
+                </span>
               </Link>
             </li>
           ))}
@@ -199,14 +201,14 @@ const Sidebar: React.FC = () => {
                 <li key={item.href} className="mt-1">
                   <Link
                     href={item.href}
-                    className={`flex items-center p-2 rounded-lg transition-all duration-200 compact-text ${
+                    className={`flex items-center p-1.5 sm:p-2 rounded-lg transition-all duration-200 compact-text ${
                       pathname === item.href
                         ? "bg-blue-100 text-blue-700 shadow-sm"
                         : "text-gray-700 hover:bg-gray-50"
                     }`}
                   >
                     <div
-                      className={`flex items-center justify-center rounded-md w-7 h-7 flex-shrink-0 ${
+                      className={`flex items-center justify-center rounded-md w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0 ${
                         pathname === item.href
                           ? "bg-blue-200 text-blue-700"
                           : "text-gray-500 group-hover:text-blue-600"
@@ -214,7 +216,7 @@ const Sidebar: React.FC = () => {
                     >
                       {item.icon}
                     </div>
-                    <span className="ms-2 font-medium truncate">
+                    <span className="ms-2 text-sm sm:text-base font-medium truncate">
                       {item.name}
                     </span>
                   </Link>
@@ -226,7 +228,7 @@ const Sidebar: React.FC = () => {
           {/* Admin Section */}
           {categories.admin?.length > 0 && (
             <>
-              <li className="pt-3 mt-1">
+              <li className="pt-2 sm:pt-3 mt-1">
                 <div className="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider truncate compact-text-sm">
                   Administration
                 </div>
@@ -235,14 +237,14 @@ const Sidebar: React.FC = () => {
                 <li key={item.href} className="mt-1">
                   <Link
                     href={item.href}
-                    className={`flex items-center p-2 rounded-lg transition-all duration-200 compact-text ${
+                    className={`flex items-center p-1.5 sm:p-2 rounded-lg transition-all duration-200 compact-text ${
                       pathname === item.href
                         ? "bg-blue-100 text-blue-700 shadow-sm"
                         : "text-gray-700 hover:bg-gray-50"
                     }`}
                   >
                     <div
-                      className={`flex items-center justify-center rounded-md w-7 h-7 flex-shrink-0 ${
+                      className={`flex items-center justify-center rounded-md w-6 h-6 sm:w-7 sm:h-7 flex-shrink-0 ${
                         pathname === item.href
                           ? "bg-blue-200 text-blue-700"
                           : "text-gray-500 group-hover:text-blue-600"
@@ -250,7 +252,7 @@ const Sidebar: React.FC = () => {
                     >
                       {item.icon}
                     </div>
-                    <span className="ms-2 font-medium truncate">
+                    <span className="ms-2 text-sm sm:text-base font-medium truncate">
                       {item.name}
                     </span>
                   </Link>
