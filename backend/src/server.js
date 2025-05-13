@@ -42,6 +42,7 @@ const io = socketio(server, {
         "https://task1-iota-olive.vercel.app",
         "https://task2-azure-beta.vercel.app",
         "https://task-management2-six.vercel.app",
+        "https://task-management-jade-xi.vercel.app",
         "http://localhost:3000",
       ];
 
@@ -181,6 +182,7 @@ app.use(
         "https://task1-iota-olive.vercel.app",
         "https://task2-azure-beta.vercel.app",
         "https://task-management2-six.vercel.app",
+        "https://task-management-jade-xi.vercel.app",
         "http://localhost:3000",
       ];
 
