@@ -1,0 +1,11 @@
+{
+  "name": "task-management-system",
+  "version": "1.0.0",
+  "description": "Task Management System Root",
+  "scripts": {
+    "install": "cd backend && npm install",
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev"
+  },
+  "private": true
+}
