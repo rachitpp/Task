@@ -59,6 +59,8 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
       // Clear any previous logout flags first - do this once
       clearLogoutFlag();
+      localStorage.removeItem("FORCE_LOGOUT");
+      localStorage.removeItem("logged_out");
 
       // Clear any stale token that might be causing issues
       localStorage.removeItem("authToken");

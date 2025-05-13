@@ -62,6 +62,11 @@ const LoginPage = () => {
       setFormError("");
       setIsSubmitting(true);
 
+      // Clear logout flags before attempting login
+      clearLogoutFlag();
+      localStorage.removeItem("FORCE_LOGOUT");
+      localStorage.removeItem("logged_out");
+
       // Validate form
       if (!email.trim()) {
         setFormError("Email is required");

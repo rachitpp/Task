@@ -2,7 +2,7 @@
 
 import { useEffect, ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { isLoggedOut } from "@/utils/logoutHelper";
+import { isLoggedOut, clearLogoutFlag } from "@/utils/logoutHelper";
 import useAuthStore from "@/stores/authStore";
 
 /**
@@ -18,7 +18,13 @@ const LogoutStateGuard = ({ children }: { children: ReactNode }) => {
     const isAuthPage = ["/login", "/register", "/logout", "/"].includes(
       pathname
     );
-    if (isAuthPage) return;
+    if (isAuthPage) {
+      // Clear logout flag when on login page to enable login after logout
+      if (pathname === "/login") {
+        clearLogoutFlag();
+      }
+      return;
+    }
 
     // Check for force logout flag - redirect to homepage when user explicitly logs out
     const isExplicitLogout =
