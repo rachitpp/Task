@@ -117,6 +117,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
       set({
         loading: false,
         error: errorMessage,
+        initialized: true, // Ensure initialized is set to true even on error
       });
       throw error;
     }
@@ -129,13 +130,35 @@ const useAuthStore = create<AuthState>((set, get) => ({
       // Clear any previous logout flags first
       clearLogoutFlag();
 
+      // Clear any existing token to prevent issues
+      localStorage.removeItem("authToken");
+
       const response = await authApi.register({ name, email, password });
-      set({ user: response.data, loading: false });
+
+      // Validate response
+      if (!response || !response.data) {
+        throw new Error("Invalid response from server during registration");
+      }
+
+      console.log("Registration successful, response:", response);
 
       // Save token to localStorage if provided in response
       if (response.token) {
+        console.log("Saving auth token after registration");
         localStorage.setItem("authToken", response.token);
+      } else {
+        console.warn("No token received from server during registration");
       }
+
+      // Set user data in a single update to ensure consistency
+      set({
+        user: response.data,
+        loading: false,
+        initialized: true,
+        recentlyLoggedOut: false,
+      });
+
+      return response; // Return the response for chaining
     } catch (error: unknown) {
       const apiError = error as ApiError;
       set({

@@ -35,12 +35,10 @@ export const forceLogout = async () => {
       socketElement.dispatchEvent(new CustomEvent("force-disconnect"));
     }
 
-    // Redirect to login page
-    window.location.href = "/login";
+    // Next.js router will handle the navigation in the components using this function
+    console.log("Logout complete - will redirect to login page");
   } catch (error) {
     console.error("Error during logout:", error);
-    // Fallback redirect
-    window.location.href = "/login";
   }
 };
 

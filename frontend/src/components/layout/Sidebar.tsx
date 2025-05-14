@@ -16,7 +16,7 @@ const Sidebar: React.FC = () => {
       href: "/dashboard",
       icon: (
         <svg
-          className="w-4 h-4"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,7 @@ const Sidebar: React.FC = () => {
       href: "/notifications",
       icon: (
         <svg
-          className="w-4 h-4"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +49,7 @@ const Sidebar: React.FC = () => {
       href: "/tasks/my-tasks",
       icon: (
         <svg
-          className="w-4 h-4"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -70,7 +70,7 @@ const Sidebar: React.FC = () => {
       href: "/tasks/assigned",
       icon: (
         <svg
-          className="w-4 h-4"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -90,7 +90,7 @@ const Sidebar: React.FC = () => {
       href: "/tasks/create",
       icon: (
         <svg
-          className="w-4 h-4"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -110,7 +110,7 @@ const Sidebar: React.FC = () => {
       href: "/tasks",
       icon: (
         <svg
-          className="w-4 h-4"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +126,7 @@ const Sidebar: React.FC = () => {
       href: "/users",
       icon: (
         <svg
-          className="w-4 h-4"
+          className="w-5 h-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -156,29 +156,31 @@ const Sidebar: React.FC = () => {
   return (
     <aside
       id="logo-sidebar"
-      className="fixed top-0 left-0 z-40 w-64 h-screen pt-12 bg-white border-r border-gray-200 shadow-sm transition-transform -translate-x-full lg:translate-x-0 overflow-hidden"
+      className="fixed top-0 left-0 z-40 w-64 h-screen pt-12 bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 shadow-sm transition-transform -translate-x-full lg:translate-x-0 overflow-hidden"
       aria-label="Sidebar"
     >
-      <div className="h-full px-1.5 py-2 overflow-y-auto bg-white">
-        <div className="flex items-center justify-center my-1 lg:hidden">
-          <h1 className="text-base font-bold text-blue-600">Task Management</h1>
+      <div className="h-full px-3 py-4 overflow-y-auto">
+        <div className="flex items-center justify-center mb-6 lg:mb-3">
+          <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
+            TASK MANAGEMENT
+          </h1>
         </div>
 
         {/* Main Navigation */}
-        <ul className="space-y-0.5 font-medium">
+        <ul className="space-y-2 font-medium">
           {/* Dashboard with special spacing */}
           {categories.main?.map((item) => (
-            <li key={item.href} className="mb-0.5">
+            <li key={item.href} className="mb-1">
               <Link
                 href={item.href}
-                className={`flex items-center py-1.5 px-2 rounded-md transition-all duration-200 group ${
+                className={`flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 group ${
                   pathname === item.href
                     ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 shadow-sm border border-blue-200"
-                    : "text-gray-700 hover:bg-gray-50"
+                    : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
                 }`}
               >
                 <div
-                  className={`flex items-center justify-center rounded-md w-5 h-5 flex-shrink-0 ${
+                  className={`flex items-center justify-center rounded-md w-6 h-6 flex-shrink-0 ${
                     pathname === item.href
                       ? "text-blue-600"
                       : "text-gray-500 group-hover:text-blue-600"
@@ -186,9 +188,7 @@ const Sidebar: React.FC = () => {
                 >
                   {item.icon}
                 </div>
-                <span className="ms-2 text-xs font-medium truncate">
-                  {item.name}
-                </span>
+                <span className="ms-3 text-sm font-medium">{item.name}</span>
               </Link>
             </li>
           ))}
@@ -196,10 +196,10 @@ const Sidebar: React.FC = () => {
           {/* Task Section */}
           {categories.tasks?.length > 0 && (
             <>
-              <li className="pt-1 mt-1">
-                <div className="flex items-center px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider truncate bg-gray-50 rounded-md border-l-2 border-blue-500">
+              <li className="pt-4 mt-4 border-t border-gray-200">
+                <div className="flex items-center px-3 py-2 mb-1 text-sm font-semibold text-gray-600 uppercase tracking-wider bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
                   <svg
-                    className="h-3 w-3 mr-1 text-blue-500"
+                    className="h-4 w-4 mr-2 text-blue-600"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -210,22 +210,22 @@ const Sidebar: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Task Management
+                  TASK MANAGEMENT
                 </div>
               </li>
               {categories.tasks.map((item) => (
-                <li key={item.href}>
+                <li key={item.href} className="mb-1">
                   <Link
                     href={item.href}
-                    className={`flex items-center py-1.5 px-2 rounded-md transition-all duration-200 group ${
+                    className={`flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 group ${
                       pathname === item.href ||
                       pathname?.includes(item.href + "/")
                         ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 shadow-sm border border-blue-200"
-                        : "text-gray-700 hover:bg-gray-50"
+                        : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
                     }`}
                   >
                     <div
-                      className={`flex items-center justify-center rounded-md w-5 h-5 flex-shrink-0 ${
+                      className={`flex items-center justify-center rounded-md w-6 h-6 flex-shrink-0 ${
                         pathname === item.href ||
                         pathname?.includes(item.href + "/")
                           ? "text-blue-600"
@@ -234,11 +234,11 @@ const Sidebar: React.FC = () => {
                     >
                       {item.icon}
                     </div>
-                    <span className="ms-2 text-xs font-medium truncate">
+                    <span className="ms-3 text-sm font-medium">
                       {item.name}
                     </span>
                     {item.name === "Create Task" && (
-                      <span className="ms-auto bg-blue-100 text-blue-600 text-xs font-semibold px-1.5 py-0.5 rounded">
+                      <span className="ms-auto bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-0.5 rounded-full">
                         New
                       </span>
                     )}
@@ -251,10 +251,10 @@ const Sidebar: React.FC = () => {
           {/* Admin Section */}
           {categories.admin?.length > 0 && (
             <>
-              <li className="pt-1 mt-1">
-                <div className="flex items-center px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider truncate bg-gray-50 rounded-md border-l-2 border-indigo-500">
+              <li className="pt-4 mt-4 border-t border-gray-200">
+                <div className="flex items-center px-3 py-2 mb-1 text-sm font-semibold text-gray-600 uppercase tracking-wider bg-gradient-to-r from-indigo-50 to-indigo-100 rounded-lg">
                   <svg
-                    className="h-3 w-3 mr-1 text-indigo-500"
+                    className="h-4 w-4 mr-2 text-indigo-600"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -264,21 +264,21 @@ const Sidebar: React.FC = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Administration
+                  ADMINISTRATION
                 </div>
               </li>
               {categories.admin.map((item) => (
-                <li key={item.href}>
+                <li key={item.href} className="mb-1">
                   <Link
                     href={item.href}
-                    className={`flex items-center py-1.5 px-2 rounded-md transition-all duration-200 group ${
+                    className={`flex items-center py-2.5 px-3 rounded-lg transition-all duration-200 group ${
                       pathname === item.href
                         ? "bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-700 shadow-sm border border-indigo-200"
-                        : "text-gray-700 hover:bg-gray-50"
+                        : "text-gray-700 hover:bg-indigo-50 hover:text-indigo-700"
                     }`}
                   >
                     <div
-                      className={`flex items-center justify-center rounded-md w-5 h-5 flex-shrink-0 ${
+                      className={`flex items-center justify-center rounded-md w-6 h-6 flex-shrink-0 ${
                         pathname === item.href
                           ? "text-indigo-600"
                           : "text-gray-500 group-hover:text-indigo-600"
@@ -286,7 +286,7 @@ const Sidebar: React.FC = () => {
                     >
                       {item.icon}
                     </div>
-                    <span className="ms-2 text-xs font-medium truncate">
+                    <span className="ms-3 text-sm font-medium">
                       {item.name}
                     </span>
                   </Link>
@@ -296,11 +296,11 @@ const Sidebar: React.FC = () => {
           )}
         </ul>
 
-        <div className="mt-4 px-2 py-3 border-t border-gray-100">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-2.5 text-xs text-blue-700 border border-blue-100 shadow-sm">
-            <p className="font-medium mb-1 flex items-center">
+        <div className="mt-6 mb-4">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100 shadow-sm">
+            <p className="font-medium mb-2 text-sm flex items-center text-blue-700">
               <svg
-                className="w-3 h-3 mr-1"
+                className="w-4 h-4 mr-1.5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -313,7 +313,7 @@ const Sidebar: React.FC = () => {
               </svg>
               Need help?
             </p>
-            <p className="text-blue-600">
+            <p className="text-sm text-blue-600">
               Access documentation or contact support for assistance.
             </p>
           </div>

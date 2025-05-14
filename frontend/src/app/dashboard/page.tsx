@@ -33,15 +33,15 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-3 sm:p-4">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="mb-3"
+        className="mb-6"
       >
         <h1
-          className="text-lg font-semibold text-gray-800 mb-1 hyphens-auto overflow-visible"
+          className="text-2xl sm:text-3xl font-semibold text-gray-800 mb-2 hyphens-auto overflow-visible"
           style={{
             wordWrap: "break-word",
             hyphens: "auto",
@@ -50,32 +50,32 @@ const Dashboard = () => {
         >
           Welcome, <span className="inline">{user?.name || "User"}</span>!
         </h1>
-        <p className="text-sm text-gray-600">
+        <p className="text-base text-gray-600">
           Here&apos;s an overview of your tasks and activities
         </p>
       </motion.div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2.5 mb-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
         <motion.div
           initial="hidden"
           animate="visible"
           variants={fadeIn}
           transition={{ delay: 0.1, duration: 0.3 }}
-          className="bg-gradient-to-br from-blue-50 to-blue-100 p-2.5 rounded-md shadow-sm border border-blue-200 hover:shadow-md transition-all duration-300 flex flex-col"
+          className="bg-gradient-to-br from-blue-50 to-blue-100 p-5 sm:p-6 rounded-lg shadow-sm border border-blue-200 hover:shadow-md transition-all duration-300 flex flex-col"
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-medium text-blue-600 mb-0.5">
+              <p className="text-sm font-medium text-blue-600 mb-1">
                 Assigned Tasks
               </p>
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-3xl font-bold text-gray-800">
                 {dashboard.overview.assignedTasks}
               </h3>
             </div>
-            <div className="bg-blue-100 p-1.5 rounded-full shrink-0">
+            <div className="bg-blue-100 p-2 rounded-full shrink-0">
               <svg
-                className="w-4 h-4 text-blue-600"
+                className="w-6 h-6 text-blue-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -90,10 +90,10 @@ const Dashboard = () => {
             </div>
           </div>
           <Link href="/tasks/assigned" className="mt-auto">
-            <div className="text-blue-600 text-xs font-medium mt-2 hover:underline flex items-center">
+            <div className="text-blue-600 text-sm font-medium mt-4 hover:underline flex items-center">
               View all assigned tasks
               <svg
-                className="w-3 h-3 ml-1"
+                className="w-4 h-4 ml-1"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -113,20 +113,20 @@ const Dashboard = () => {
           animate="visible"
           variants={fadeIn}
           transition={{ delay: 0.2, duration: 0.3 }}
-          className="bg-gradient-to-br from-purple-50 to-purple-100 p-2.5 rounded-md shadow-sm border border-purple-200 hover:shadow-md transition-all duration-300 flex flex-col"
+          className="bg-gradient-to-br from-purple-50 to-purple-100 p-5 sm:p-6 rounded-lg shadow-sm border border-purple-200 hover:shadow-md transition-all duration-300 flex flex-col"
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-medium text-purple-600 mb-0.5">
+              <p className="text-sm font-medium text-purple-600 mb-1">
                 Created Tasks
               </p>
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-3xl font-bold text-gray-800">
                 {dashboard.overview.createdTasks}
               </h3>
             </div>
-            <div className="bg-purple-100 p-1.5 rounded-full shrink-0">
+            <div className="bg-purple-100 p-2 rounded-full shrink-0">
               <svg
-                className="w-4 h-4 text-purple-600"
+                className="w-6 h-6 text-purple-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -140,10 +140,10 @@ const Dashboard = () => {
             </div>
           </div>
           <Link href="/tasks/my-tasks" className="mt-auto">
-            <div className="text-purple-600 text-xs font-medium mt-2 hover:underline flex items-center">
+            <div className="text-purple-600 text-sm font-medium mt-4 hover:underline flex items-center">
               View your created tasks
               <svg
-                className="w-3 h-3 ml-1"
+                className="w-4 h-4 ml-1"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -163,20 +163,20 @@ const Dashboard = () => {
           animate="visible"
           variants={fadeIn}
           transition={{ delay: 0.3, duration: 0.3 }}
-          className="bg-gradient-to-br from-green-50 to-green-100 p-2.5 rounded-md shadow-sm border border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
+          className="bg-gradient-to-br from-green-50 to-green-100 p-5 sm:p-6 rounded-lg shadow-sm border border-green-200 hover:shadow-md transition-all duration-300 flex flex-col"
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-medium text-green-600 mb-0.5">
+              <p className="text-sm font-medium text-green-600 mb-1">
                 Completed Tasks
               </p>
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-3xl font-bold text-gray-800">
                 {dashboard.tasksByStatus?.completed || 0}
               </h3>
             </div>
-            <div className="bg-green-100 p-1.5 rounded-full shrink-0">
+            <div className="bg-green-100 p-2 rounded-full shrink-0">
               <svg
-                className="w-4 h-4 text-green-600"
+                className="w-6 h-6 text-green-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -190,10 +190,10 @@ const Dashboard = () => {
             </div>
           </div>
           <Link href="/tasks?status=completed" className="mt-auto">
-            <div className="text-green-600 text-xs font-medium mt-2 hover:underline flex items-center">
+            <div className="text-green-600 text-sm font-medium mt-4 hover:underline flex items-center">
               View completed tasks
               <svg
-                className="w-3 h-3 ml-1"
+                className="w-4 h-4 ml-1"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -213,20 +213,20 @@ const Dashboard = () => {
           animate="visible"
           variants={fadeIn}
           transition={{ delay: 0.4, duration: 0.3 }}
-          className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-2.5 rounded-md shadow-sm border border-yellow-200 hover:shadow-md transition-all duration-300 flex flex-col"
+          className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-5 sm:p-6 rounded-lg shadow-sm border border-yellow-200 hover:shadow-md transition-all duration-300 flex flex-col"
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs font-medium text-yellow-600 mb-0.5">
+              <p className="text-sm font-medium text-yellow-600 mb-1">
                 Overdue Tasks
               </p>
-              <h3 className="text-xl font-bold text-gray-800">
+              <h3 className="text-3xl font-bold text-gray-800">
                 {dashboard.overview.overdueTasks || 0}
               </h3>
             </div>
-            <div className="bg-yellow-100 p-1.5 rounded-full shrink-0">
+            <div className="bg-yellow-100 p-2 rounded-full shrink-0">
               <svg
-                className="w-4 h-4 text-yellow-600"
+                className="w-6 h-6 text-yellow-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -240,10 +240,10 @@ const Dashboard = () => {
             </div>
           </div>
           <Link href="/tasks?status=overdue" className="mt-auto">
-            <div className="text-yellow-600 text-xs font-medium mt-2 hover:underline flex items-center">
+            <div className="text-yellow-600 text-sm font-medium mt-4 hover:underline flex items-center">
               View overdue tasks
               <svg
-                className="w-3 h-3 ml-1"
+                className="w-4 h-4 ml-1"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -265,11 +265,11 @@ const Dashboard = () => {
         animate="visible"
         variants={fadeIn}
         transition={{ duration: 0.3 }}
-        className="bg-white p-2.5 rounded-md shadow-sm border border-gray-200 mb-3 hover:shadow-md transition-all duration-300"
+        className="bg-white p-5 sm:p-6 rounded-lg shadow-sm border border-gray-200 mb-6 hover:shadow-md transition-all duration-300"
       >
-        <h2 className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
           <svg
-            className="w-3.5 h-3.5 mr-1.5 text-blue-600 flex-shrink-0"
+            className="w-5 h-5 mr-2 text-blue-600 flex-shrink-0"
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
@@ -280,13 +280,13 @@ const Dashboard = () => {
         </h2>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Link
             href="/tasks/create"
-            className="bg-blue-50 border border-blue-100 hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 flex flex-col items-center justify-center text-center"
+            className="bg-blue-50 border border-blue-100 hover:bg-blue-100 p-4 rounded-lg transition-colors duration-200 flex flex-col items-center justify-center text-center h-24"
           >
             <svg
-              className="w-5 h-5 text-blue-600 mb-1"
+              className="w-7 h-7 text-blue-600 mb-2"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -297,47 +297,47 @@ const Dashboard = () => {
                 clipRule="evenodd"
               ></path>
             </svg>
-            <span className="text-xs font-medium text-gray-800">New Task</span>
+            <span className="text-sm font-medium text-gray-800">New Task</span>
           </Link>
 
           <Link
             href="/tasks"
-            className="bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 p-2 rounded-md transition-colors duration-200 flex flex-col items-center justify-center text-center"
+            className="bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 p-4 rounded-lg transition-colors duration-200 flex flex-col items-center justify-center text-center h-24"
           >
             <svg
-              className="w-5 h-5 text-indigo-600 mb-1"
+              className="w-7 h-7 text-indigo-600 mb-2"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
             </svg>
-            <span className="text-xs font-medium text-gray-800">All Tasks</span>
+            <span className="text-sm font-medium text-gray-800">All Tasks</span>
           </Link>
 
           <Link
             href="/notifications"
-            className="bg-rose-50 border border-rose-100 hover:bg-rose-100 p-2 rounded-md transition-colors duration-200 flex flex-col items-center justify-center text-center"
+            className="bg-rose-50 border border-rose-100 hover:bg-rose-100 p-4 rounded-lg transition-colors duration-200 flex flex-col items-center justify-center text-center h-24"
           >
             <svg
-              className="w-5 h-5 text-rose-600 mb-1"
+              className="w-7 h-7 text-rose-600 mb-2"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
             </svg>
-            <span className="text-xs font-medium text-gray-800">
+            <span className="text-sm font-medium text-gray-800">
               Notifications
             </span>
           </Link>
 
           <Link
             href="/profile"
-            className="bg-emerald-50 border border-emerald-100 hover:bg-emerald-100 p-2 rounded-md transition-colors duration-200 flex flex-col items-center justify-center text-center"
+            className="bg-emerald-50 border border-emerald-100 hover:bg-emerald-100 p-4 rounded-lg transition-colors duration-200 flex flex-col items-center justify-center text-center h-24"
           >
             <svg
-              className="w-5 h-5 text-emerald-600 mb-1"
+              className="w-7 h-7 text-emerald-600 mb-2"
               fill="currentColor"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
@@ -348,13 +348,13 @@ const Dashboard = () => {
                 clipRule="evenodd"
               ></path>
             </svg>
-            <span className="text-xs font-medium text-gray-800">Profile</span>
+            <span className="text-sm font-medium text-gray-800">Profile</span>
           </Link>
         </div>
       </motion.div>
 
       {/* Task Distribution Charts & Recent Tasks */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Tasks Panel */}
         {dashboard.recentTasks && dashboard.recentTasks.length > 0 && (
           <motion.div
@@ -362,11 +362,11 @@ const Dashboard = () => {
             animate="visible"
             variants={fadeIn}
             transition={{ delay: 0.5, duration: 0.3 }}
-            className="bg-white p-2.5 rounded-md shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300"
+            className="bg-white p-5 sm:p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300"
           >
-            <h2 className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
               <svg
-                className="w-3.5 h-3.5 mr-1.5 text-blue-600 flex-shrink-0"
+                className="w-5 h-5 mr-2 text-blue-600 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -385,25 +385,25 @@ const Dashboard = () => {
                   <tr>
                     <th
                       scope="col"
-                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                     >
                       Task
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                     >
                       Status
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                     >
                       Priority
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider"
                     >
                       Due Date
                     </th>
@@ -412,30 +412,30 @@ const Dashboard = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {dashboard.recentTasks.map((task) => (
                     <tr key={task._id} className="hover:bg-gray-50">
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        <div className="text-xs font-medium text-gray-900 truncate max-w-[150px]">
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900 truncate max-w-[150px]">
                           {task.title}
                         </div>
                       </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(
+                          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(
                             task.status
                           )}`}
                         >
                           {task.status}
                         </span>
                       </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getPriorityBadgeColor(
+                          className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getPriorityBadgeColor(
                             task.priority
                           )}`}
                         >
                           {task.priority}
                         </span>
                       </td>
-                      <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                         {task.dueDate
                           ? new Date(task.dueDate).toLocaleDateString()
                           : "No due date"}

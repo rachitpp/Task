@@ -22,17 +22,26 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginComplete, setLoginComplete] = useState(false);
 
-  // Redirect if already logged in - use a single effect for all auth-related redirects
+  // Effect to redirect when user is logged in (either by form submission or auth state)
+  useEffect(() => {
+    if (user && !loading) {
+      router.push("/dashboard");
+    }
+  }, [user, loading, router]);
+
+  // Effect to redirect after login is completed successfully
+  useEffect(() => {
+    if (loginComplete && user) {
+      router.push("/dashboard");
+    }
+  }, [loginComplete, user, router]);
+
+  // Clear errors and setup form when component mounts
   useEffect(() => {
     // Clear form errors when component mounts
     clearError();
-
-    // Redirect if already logged in
-    if (user) {
-      clearLogoutFlag();
-      router.push("/dashboard");
-    }
 
     // Disable autocomplete properly
     const disableAutocomplete = () => {
@@ -49,7 +58,7 @@ const LoginPage = () => {
       // Clear any errors when component unmounts
       clearError();
     };
-  }, [user, router, clearError]);
+  }, [clearError]);
 
   // Memoize the submit handler to prevent unnecessary re-renders
   const handleSubmit = useCallback(
@@ -87,11 +96,11 @@ const LoginPage = () => {
         console.log("Login successful, clearing logout flag");
         clearLogoutFlag();
 
-        // Add a small delay before redirect to ensure state is updated
-        setTimeout(() => {
-          console.log("Redirecting to dashboard");
-          router.push("/dashboard");
-        }, 100);
+        // Mark login as complete to trigger redirect
+        setLoginComplete(true);
+
+        // Force immediate redirect to dashboard
+        router.push("/dashboard");
       } catch (err: unknown) {
         console.error("Login form error:", err);
         const apiError = err as ApiError;
@@ -108,7 +117,7 @@ const LoginPage = () => {
         setIsSubmitting(false);
       }
     },
-    [email, password, login, router, isSubmitting, loading]
+    [email, password, login, router, isSubmitting, loading, clearLogoutFlag]
   );
 
   return (

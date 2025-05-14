@@ -28,13 +28,21 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formError, setFormError] = useState("");
+  const [registrationComplete, setRegistrationComplete] = useState(false);
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user) {
+    if (user && !loading) {
       router.push("/dashboard");
     }
-  }, [user, router]);
+  }, [user, loading, router]);
+
+  // Handle redirect after successful registration
+  useEffect(() => {
+    if (registrationComplete && user) {
+      router.push("/dashboard");
+    }
+  }, [registrationComplete, user, router]);
 
   // Clear any existing errors when the component mounts
   useEffect(() => {
@@ -99,10 +107,11 @@ const RegisterPage = () => {
       // Ensure all logout flags are cleared
       clearLogoutFlag();
 
-      // Redirect to dashboard with a slight delay to allow state to update
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 100);
+      // Mark registration as complete to trigger redirect
+      setRegistrationComplete(true);
+
+      // Force immediate redirect to dashboard
+      router.push("/dashboard");
     } catch (err: unknown) {
       const apiError = err as ApiError;
       setFormError(apiError.response?.data?.message || "Registration failed");

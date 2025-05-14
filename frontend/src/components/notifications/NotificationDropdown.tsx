@@ -104,11 +104,11 @@ const NotificationDropdown: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="p-1.5 text-gray-700 rounded-lg hover:text-gray-900 hover:bg-gray-100 relative"
+        className="p-2 text-gray-700 rounded-lg hover:text-gray-900 hover:bg-gray-100 relative focus:outline-none focus:ring-2 focus:ring-blue-300"
       >
         <span className="sr-only">View notifications</span>
         <svg
-          className="w-6 h-6"
+          className="w-7 h-7"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -116,20 +116,20 @@ const NotificationDropdown: React.FC = () => {
           <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
         </svg>
         {unreadCount > 0 && (
-          <div className="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full -top-1 -right-1">
+          <div className="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-1.5 -right-1.5 shadow-sm">
             {unreadCount > 9 ? "9+" : unreadCount}
           </div>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-50 mt-2 overflow-hidden bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-80">
-          <div className="flex items-center justify-between px-3 py-1.5 text-sm font-medium text-gray-900 bg-gray-50">
+        <div className="absolute right-0 z-50 mt-2 overflow-hidden bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-80 border border-gray-100">
+          <div className="flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-900 bg-gradient-to-r from-blue-50 to-indigo-50">
             <span>Notifications</span>
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllAsRead()}
-                className="text-xs text-blue-700 hover:text-blue-900"
+                className="text-xs text-blue-700 hover:text-blue-900 font-medium"
               >
                 Mark all as read
               </button>
@@ -137,11 +137,11 @@ const NotificationDropdown: React.FC = () => {
           </div>
           <div className="divide-y divide-gray-100 max-h-96 overflow-y-auto">
             {loading ? (
-              <div className="px-3 py-2 text-sm text-gray-700 text-center">
+              <div className="px-4 py-3 text-sm text-gray-700 text-center">
                 Loading...
               </div>
             ) : notifications.length === 0 ? (
-              <div className="px-3 py-2 text-sm text-gray-700 text-center">
+              <div className="px-4 py-3 text-sm text-gray-700 text-center">
                 No notifications
               </div>
             ) : (
@@ -154,7 +154,7 @@ const NotificationDropdown: React.FC = () => {
                       notification.task?._id
                     )
                   }
-                  className={`px-3 py-2 hover:bg-gray-50 cursor-pointer ${
+                  className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-150 ${
                     !notification.isRead ? "bg-blue-50" : ""
                   }`}
                 >
@@ -170,7 +170,7 @@ const NotificationDropdown: React.FC = () => {
                     {notification.message}
                   </p>
                   {!notification.isRead && (
-                    <span className="inline-block w-2 h-2 bg-blue-600 rounded-full ml-1"></span>
+                    <span className="inline-block w-2.5 h-2.5 bg-blue-600 rounded-full ml-1"></span>
                   )}
                 </div>
               ))
@@ -178,7 +178,7 @@ const NotificationDropdown: React.FC = () => {
           </div>
           <Link
             href="/notifications"
-            className="block px-3 py-1.5 text-sm text-center text-gray-900 hover:bg-gray-100"
+            className="block px-4 py-2 text-sm text-center text-gray-900 hover:bg-gray-100 font-medium"
             onClick={() => setIsOpen(false)}
           >
             Show all notifications
